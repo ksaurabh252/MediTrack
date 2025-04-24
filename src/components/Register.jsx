@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -15,6 +17,14 @@ export default function Register() {
     e.preventDefault();
 
     if (password !== confirmPassword) {
+      toast.error("Passwords do not match", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
       return setError("Passwords do not match");
     }
 
@@ -22,9 +32,26 @@ export default function Register() {
       setError("");
       setLoading(true);
       await signup(email, password);
-      navigate("/");
+      toast.success("Account created successfully!", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        onClose: () => navigate("/"),
+      });
     } catch (error) {
-      setError("Failed to create an account: " + error.message);
+      const errorMessage = "Failed to create an account: " + error.message;
+      toast.error(errorMessage, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      setError(errorMessage);
     }
     setLoading(false);
   }
@@ -107,6 +134,18 @@ export default function Register() {
             </button>
           </div>
         </form>
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
       </div>
     </div>
   );
