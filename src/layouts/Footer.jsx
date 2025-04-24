@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 
 const Footer = ({ darkMode }) => {
@@ -25,6 +26,8 @@ const Footer = ({ darkMode }) => {
   );
 };
 
-
+Footer.propTypes = {
+  darkMode: PropTypes.bool.isRequired
+};
 
 export default Footer;
