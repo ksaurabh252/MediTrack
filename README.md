@@ -73,10 +73,16 @@ MediTrack
 ├── layouts
 │ ├── AuthLayout.jsx
 │ └── MainLayout.jsx
+| |** Header.jsx
+| |** Footer.jsx
 ├── pages
 │ ├── Auth
 │ │ ├── Login.jsx
 │ │ └── Register.jsx
+| |\_\_\_ homePage
+| | | HomePage.jsx
+| | |\_HomePage.module.jsx
+| |
 │ ├── Dashboard
 │ │ └── Dashboard.jsx
 │ ├── Medications
