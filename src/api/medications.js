@@ -21,7 +21,6 @@ export const fetchMedications = async () => {
 
 export const addMedication = async (medicationData) => {
   try {
-    // 1. Add createdAt timestamp
     const processedData = {
       ...medicationData,
       dosage: Number(medicationData.dosage),

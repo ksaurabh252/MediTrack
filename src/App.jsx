@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import LandingPage from './pages/homePage/HomePage';
 import { MedicationList } from './pages/Medications/MedicationList';
 import AddMedicationPage from './pages/Medications/AddMedicationPage';
+import './App.css';
 
 function App() {
   return (

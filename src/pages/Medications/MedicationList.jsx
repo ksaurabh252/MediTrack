@@ -1,20 +1,26 @@
-import { useState, useEffect } from 'react';
-import { fetchMedications, addMedication, updateMedication, deleteMedication } from '../../api/medications';
-import { MedicationForm } from '../../components/medications/MedicationForm';
-import { MedicationDetails } from '../../components/medications/MedicationDetails';
-import { Modal } from '../../components/ui/Modal/Modal';
-import { Card } from '../../components/ui/Card/Card';
-import { Button } from '../../components/ui/Button/Button';
+import { useState, useEffect } from "react";
+import {
+  fetchMedications,
+  addMedication,
+  updateMedication,
+  deleteMedication,
+} from "../../api/medications";
+import { MedicationForm } from "../../components/medications/MedicationForm";
+import { MedicationDetails } from "../../components/medications/MedicationDetails";
+import { Modal } from "../../components/ui/Modal/Modal";
+import { Card } from "../../components/ui/Card/Card";
+import { Button } from "../../components/ui/Button/Button";
+import { Toast } from "../../components/ui/Toast/Toast";
 
 export const MedicationList = () => {
   const [medications, setMedications] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [currentMedication, setCurrentMedication] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [activeFilter, setActiveFilter] = useState('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeFilter, setActiveFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
@@ -25,7 +31,7 @@ export const MedicationList = () => {
         setMedications(data);
         setLoading(false);
       } catch (err) {
-        setError(err.message);
+        showToast(`Failed to load medications: ${err.message}`, "error");
         setLoading(false);
       }
     };
@@ -33,39 +39,59 @@ export const MedicationList = () => {
     loadMedications();
   }, []);
 
+  const [toast, setToast] = useState({
+    show: false,
+    message: "",
+    type: "info",
+  });
+
+  const showToast = (message, type = "info") => {
+    setToast({ show: true, message, type });
+    setTimeout(() => setToast((prev) => ({ ...prev, show: false })), 3000);
+  };
+
   const handleAddMedication = async (medicationData) => {
     try {
-      console.log('Adding medication:', medicationData);
+      console.log("Adding medication:", medicationData);
       const newMedication = await addMedication(medicationData);
-      console.log('Added successfully:', newMedication);
-      setMedications(prev => [...prev, newMedication]);
+      console.log("Added successfully:", newMedication);
+      setMedications((prev) => [...prev, newMedication]);
       setIsModalOpen(false);
+      showToast("Medication added successfully!", "success");
     } catch (err) {
-      console.error('Failed to add medication:', err);
-      setError(err.message);
-
+      showToast(`Failed to add medication: ${err.message}`, "error");
+      console.error("Failed to add medication:", err);
     }
   };
 
   const handleUpdateMedication = async (medicationData) => {
     try {
-      const updatedMedication = await updateMedication(currentMedication.id, medicationData);
-      setMedications(prev =>
-        prev.map(med => med.id === updatedMedication.id ? updatedMedication : med)
+      const updatedMedication = await updateMedication(
+        currentMedication.id,
+        medicationData
+      );
+      setMedications((prev) =>
+        prev.map((med) =>
+          med.id === updatedMedication.id ? updatedMedication : med
+        )
       );
       closeModals();
+      showToast("Medication updated successfully!", "success");
     } catch (err) {
-      setError(err.message);
+      showToast(`Failed to update medication: ${err.message}`, "error");
+      console.error("Failed to update medication:", err);
     }
   };
 
   const handleDeleteMedication = async (id) => {
     try {
       await deleteMedication(id);
-      setMedications(prev => prev.filter(med => med.id !== id));
+      setMedications((prev) => prev.filter((med) => med.id !== id));
       closeModals();
+      showToast("Medication deleted successfully!", "success");
     } catch (err) {
-      setError(err.message);
+      showToast(`Failed to delete medication: ${err.message}`, "error");
+      console.error("Failed to delete medication:", err);
     }
   };
 
@@ -85,12 +111,14 @@ export const MedicationList = () => {
     setCurrentMedication(null);
   };
 
-  const filteredMedications = medications.filter(med => {
-    const matchesSearch = med.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  const filteredMedications = medications.filter((med) => {
+    const matchesSearch =
+      med.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       med.patientName.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = activeFilter === 'all' ||
-      (activeFilter === 'active' && med.isActive) ||
-      (activeFilter === 'inactive' && !med.isActive);
+    const matchesFilter =
+      activeFilter === "all" ||
+      (activeFilter === "active" && med.isActive) ||
+      (activeFilter === "inactive" && !med.isActive);
     return matchesSearch && matchesFilter;
   });
 
@@ -101,16 +129,21 @@ export const MedicationList = () => {
 
   const totalPages = Math.ceil(filteredMedications.length / itemsPerPage);
 
-  if (loading) return <div>Loading medications...</div>;
-  if (error) return <div>Error: {error}</div>;
+  // if (loading) return <div>Loading medications...</div>;
+  if (loading)
+    return (
+      <div className="flex justify-center items-center h-64">
+
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+
+      </div>
+    );
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Medication Management</h1>
-        <Button onClick={() => openEditModal(null)}>
-          Add New Medication
-        </Button>
+        <Button onClick={() => openEditModal(null)}>Add New Medication</Button>
       </div>
 
       <div className="flex flex-col md:flex-row gap-4">
@@ -139,7 +172,7 @@ export const MedicationList = () => {
         </Card>
       ) : (
         <div className="space-y-4">
-          {paginatedMedications.map(medication => (
+          {paginatedMedications.map((medication) => (
             <Card
               key={medication.id}
               onClick={() => openDetailsModal(medication)}
@@ -149,12 +182,17 @@ export const MedicationList = () => {
                 <div>
                   <h2 className="text-lg font-semibold">{medication.name}</h2>
                   <p className="text-sm text-gray-600">
-                    {medication.dosage} {medication.dosageUnit} • {medication.frequency}
+                    {medication.dosage} {medication.dosageUnit} •{" "}
+                    {medication.frequency}
                   </p>
                   <p className="text-sm">Patient: {medication.patientName}</p>
-                  <span className={`inline-block px-2 py-1 text-xs rounded-full ${medication.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                    }`}>
-                    {medication.isActive ? 'Active' : 'Inactive'}
+                  <span
+                    className={`inline-block px-2 py-1 text-xs rounded-full ${medication.isActive
+                      ? "bg-green-100 text-green-800"
+                      : "bg-gray-100 text-gray-800"
+                      }`}
+                  >
+                    {medication.isActive ? "Active" : "Inactive"}
                   </span>
                 </div>
                 <div className="flex space-x-2">
@@ -190,7 +228,7 @@ export const MedicationList = () => {
           <Button
             variant="secondary"
             disabled={currentPage === 1}
-            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           >
             Previous
           </Button>
@@ -200,7 +238,9 @@ export const MedicationList = () => {
           <Button
             variant="secondary"
             disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
           >
             Next
           </Button>
@@ -216,7 +256,9 @@ export const MedicationList = () => {
         {isModalOpen && (
           <MedicationForm
             initialData={currentMedication || {}}
-            onSave={currentMedication ? handleUpdateMedication : handleAddMedication}
+            onSave={
+              currentMedication ? handleUpdateMedication : handleAddMedication
+            }
             onCancel={() => setIsModalOpen(false)}
           />
         )}
@@ -242,6 +284,12 @@ export const MedicationList = () => {
           <div>No medication data available</div>
         )}
       </Modal>
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        show={toast.show}
+        onClose={() => setToast((prev) => ({ ...prev, show: false }))}
+      />
     </div>
   );
 };
