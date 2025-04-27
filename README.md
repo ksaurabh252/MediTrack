@@ -2,6 +2,76 @@
 
 MediTrack is a modern, responsive web application designed to help users effortlessly manage their medications. It focuses on providing timely reminders, simplifying prescription renewals, and offering a clear history of medication usage, ultimately enhancing patient adherence and improving health outcomes.
 
+## Key Features
+
+### ✅ Implemented Features
+
+- **Medication Management**
+
+  - Complete CRUD operations for medications
+  - Dosage calculation tools (weight-based)
+  - Custom scheduling (daily, weekly, custom days)
+  - One-time dose exceptions
+
+- **Reminder System**
+
+  - Browser notifications with permission handling
+  - Interactive reminder popups
+  - Snooze functionality (5, 10, 15, 30, 60 mins)
+  - Missed dose tracking
+
+- **Prescription Module**
+
+  - Document upload (PDF/Images)
+  - File validation (type, size)
+  - Renewal status tracking
+  - Basic preview functionality
+
+- **Core Infrastructure**
+  - React 18 + Vite
+  - Redux Toolkit state management
+  - Tailwind CSS styling
+  - Responsive layout
+  - Dark mode support
+
+### 🚧 Upcoming Features
+
+- Advanced prescription analytics
+- Doctor communication interface
+- Medication adherence reports
+- Mobile app integration
+
+## Technical Stack
+
+**Frontend**
+
+- React 18 + Hooks
+- Redux Toolkit
+- React Router 6
+- Tailwind CSS + HeadlessUI
+- Date-fns for date handling
+
+**Backend**
+
+- Firebase Realtime Database (current)
+- REST API ready architecture
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js v16+
+- npm/yarn
+
+### Installation
+
+```bash
+git clone https://github.com/ksaurabh252/MediTrack
+cd meditrack
+npm install
+
+npm run build
+
 ## Project Structure
 
 Meditrack/
@@ -94,3 +164,4 @@ Meditrack/
 ├── index.jsx
 ├── main.jsx
 └── serviceWorker.js
+```
