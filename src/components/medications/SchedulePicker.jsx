@@ -1,21 +1,20 @@
-
-import PropTypes from 'prop-types';
-import { useState } from 'react';
-import { DayPicker } from 'react-day-picker';
-import 'react-day-picker/dist/style.css';
+import PropTypes from "prop-types";
+import { useState } from "react";
+import { DayPicker } from "react-day-picker";
+import "react-day-picker/dist/style.css";
 
 export const SchedulePicker = ({ schedule, onChange }) => {
   const [selectedDays, setSelectedDays] = useState([]);
-  const [recurrence, setRecurrence] = useState('daily');
+  const [recurrence, setRecurrence] = useState("daily");
   const [showCalendar, setShowCalendar] = useState(false);
 
   const handleDaySelect = (day) => {
-    const isSelected = selectedDays.some(d =>
-      d.toDateString() === day.toDateString()
+    const isSelected = selectedDays.some(
+      (d) => d.toDateString() === day.toDateString()
     );
 
     const newDays = isSelected
-      ? selectedDays.filter(d => d.toDateString() !== day.toDateString())
+      ? selectedDays.filter((d) => d.toDateString() !== day.toDateString())
       : [...selectedDays, day];
 
     setSelectedDays(newDays);
@@ -43,17 +42,19 @@ export const SchedulePicker = ({ schedule, onChange }) => {
       </div>
 
       {/* Custom Days Selection (shown when recurrence is 'custom') */}
-      {recurrence === 'custom' && (
+      {recurrence === "custom" && (
         <div className="grid grid-cols-7 gap-1">
-          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, i) => (
+          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day, i) => (
             <button
               key={day}
               type="button"
-              className={`p-2 border rounded ${schedule.customDays?.includes(i) ? 'bg-blue-100 border-blue-500' : ''
+              className={`p-2 border rounded ${schedule.customDays?.includes(i)
+                  ? "bg-blue-100 border-blue-500"
+                  : ""
                 }`}
               onClick={() => {
                 const newDays = schedule.customDays?.includes(i)
-                  ? schedule.customDays.filter(d => d !== i)
+                  ? schedule.customDays.filter((d) => d !== i)
                   : [...(schedule.customDays || []), i];
                 onChange({ ...schedule, customDays: newDays });
               }}
@@ -71,7 +72,7 @@ export const SchedulePicker = ({ schedule, onChange }) => {
           onClick={() => setShowCalendar(!showCalendar)}
           className="text-blue-500 text-sm"
         >
-          {showCalendar ? 'Hide Calendar' : 'Add One-time Exceptions'}
+          {showCalendar ? "Hide Calendar" : "Add One-time Exceptions"}
         </button>
 
         {showCalendar && (

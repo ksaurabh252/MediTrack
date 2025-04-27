@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import PropTypes from 'prop-types';
-import { SchedulePicker } from './SchedulePicker';
+import { useState } from "react";
+import PropTypes from "prop-types";
+import { SchedulePicker } from "./SchedulePicker";
 import { DosageInput } from "../../pages/Medications/DosageInput";
-import { validateMedication } from '../../utils/validation';
-import { Button } from '../ui/Button/Button';
+import { validateMedication } from "../../utils/validation";
+import { Button } from "../ui/Button/Button";
 
 export const MedicationForm = ({
   initialData = {},
@@ -13,27 +13,29 @@ export const MedicationForm = ({
 }) => {
   // Main form state
   const [formData, setFormData] = useState({
-    name: initialData.name || '',
-    type: initialData.type || 'tablet',
-    dosage: initialData.dosage || '',
-    dosageUnit: initialData.dosageUnit || 'mg',
-    frequency: initialData.frequency || 'Once',
-    quantity: initialData.quantity || '',
-    startDate: initialData.startDate || '',
-    endDate: initialData.endDate || '',
-    prescribedBy: initialData.prescribedBy || '',
-    patientName: initialData.patientName || '',
+    name: initialData.name || "",
+    type: initialData.type || "tablet",
+    dosage: initialData.dosage || "",
+    dosageUnit: initialData.dosageUnit || "mg",
+    frequency: initialData.frequency || "Once",
+    quantity: initialData.quantity || "",
+    startDate: initialData.startDate || "",
+    endDate: initialData.endDate || "",
+    prescribedBy: initialData.prescribedBy || "",
+    patientName: initialData.patientName || "",
     refillsRemaining: initialData.refillsRemaining || 0,
-    instructions: initialData.instructions || '',
+    instructions: initialData.instructions || "",
     isActive: initialData.isActive !== undefined ? initialData.isActive : true,
   });
 
   // Schedule state
-  const [schedule, setSchedule] = useState(initialData.schedule || {
-    pattern: 'daily',
-    customDays: [],
-    exceptions: []
-  });
+  const [schedule, setSchedule] = useState(
+    initialData.schedule || {
+      pattern: "daily",
+      customDays: [],
+      exceptions: [],
+    }
+  );
 
   const [errors, setErrors] = useState({});
 
@@ -41,7 +43,7 @@ export const MedicationForm = ({
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
@@ -53,7 +55,9 @@ export const MedicationForm = ({
       schedule,
       dosage: formData.dosage ? Number(formData.dosage) : 0,
       quantity: formData.quantity ? Number(formData.quantity) : 0,
-      refillsRemaining: formData.refillsRemaining ? Number(formData.refillsRemaining) : 0,
+      refillsRemaining: formData.refillsRemaining
+        ? Number(formData.refillsRemaining)
+        : 0,
     };
 
     const validationErrors = validateMedication(processedData);
@@ -66,7 +70,10 @@ export const MedicationForm = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-h-[80vh] overflow-y-auto pr-2">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-6 max-h-[80vh] overflow-y-auto pr-2"
+    >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-2">
         {/* Medication Name */}
         <div>
@@ -79,7 +86,9 @@ export const MedicationForm = ({
             className="w-full p-2 border rounded"
             required
           />
-          {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+          {errors.name && (
+            <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+          )}
         </div>
 
         {/* Medication Type */}
@@ -104,11 +113,17 @@ export const MedicationForm = ({
           <label className="block mb-1">Dosage*</label>
           <DosageInput
             value={formData.dosage}
-            onChange={(value) => setFormData(prev => ({ ...prev, dosage: value }))}
+            onChange={(value) =>
+              setFormData((prev) => ({ ...prev, dosage: value }))
+            }
             unit={formData.dosageUnit}
-            onUnitChange={(e) => setFormData(prev => ({ ...prev, dosageUnit: e.target.value }))}
+            onUnitChange={(e) =>
+              setFormData((prev) => ({ ...prev, dosageUnit: e.target.value }))
+            }
           />
-          {errors.dosage && <p className="text-red-500 text-sm mt-1">{errors.dosage}</p>}
+          {errors.dosage && (
+            <p className="text-red-500 text-sm mt-1">{errors.dosage}</p>
+          )}
         </div>
 
         {/* Frequency */}
@@ -141,7 +156,9 @@ export const MedicationForm = ({
             required
             min="1"
           />
-          {errors.quantity && <p className="text-red-500 text-sm mt-1">{errors.quantity}</p>}
+          {errors.quantity && (
+            <p className="text-red-500 text-sm mt-1">{errors.quantity}</p>
+          )}
         </div>
 
         {/* Start Date */}
@@ -155,7 +172,9 @@ export const MedicationForm = ({
             className="w-full p-2 border rounded"
             required
           />
-          {errors.startDate && <p className="text-red-500 text-sm mt-1">{errors.startDate}</p>}
+          {errors.startDate && (
+            <p className="text-red-500 text-sm mt-1">{errors.startDate}</p>
+          )}
         </div>
 
         {/* End Date */}
@@ -193,7 +212,9 @@ export const MedicationForm = ({
             className="w-full p-2 border rounded"
             required
           />
-          {errors.patientName && <p className="text-red-500 text-sm mt-1">{errors.patientName}</p>}
+          {errors.patientName && (
+            <p className="text-red-500 text-sm mt-1">{errors.patientName}</p>
+          )}
         </div>
 
         {/* Refills Remaining */}
@@ -216,9 +237,9 @@ export const MedicationForm = ({
             schedule={schedule}
             onChange={(newSchedule) => {
               setSchedule(newSchedule);
-              setFormData(prev => ({
+              setFormData((prev) => ({
                 ...prev,
-                schedule: newSchedule
+                schedule: newSchedule,
               }));
             }}
           />
@@ -261,11 +282,8 @@ export const MedicationForm = ({
         >
           Cancel
         </Button>
-        <Button
-          type="submit"
-          disabled={isLoading}
-        >
-          {isLoading ? 'Saving...' : 'Save Medication'}
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? "Saving..." : "Save Medication"}
         </Button>
       </div>
     </form>

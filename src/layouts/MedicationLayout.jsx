@@ -7,8 +7,7 @@ import Footer from './Footer';
 import { Toast } from '../components/ui/Toast/Toast';
 import Header from './Header';
 import { useState } from 'react';
-// import Footer from '../components/layouts/Footer/Footer';
-// import Toast from '../components/ui/Toast/Toast/Toast';
+
 
 export default function MedicationLayout() {
   const { medications, pendingReminders } = useSelector(state => state.medications);

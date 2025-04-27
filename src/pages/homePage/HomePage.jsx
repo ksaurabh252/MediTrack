@@ -262,8 +262,8 @@ const HomePage = () => {
             <div
               key={index}
               className={`p-6 rounded-xl ${darkMode
-                  ? "bg-gray-800 border-gray-700"
-                  : "bg-gray-50 border-gray-200"
+                ? "bg-gray-800 border-gray-700"
+                : "bg-gray-50 border-gray-200"
                 } border`}
             >
               <svg

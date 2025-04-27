@@ -55,7 +55,7 @@ export const MedicationList = () => {
       }
     };
     loadMedications();
-  }, []);
+  }, [dispatch]);
 
   const showToast = (message, type = "info") => {
     setToast({ show: true, message, type });
@@ -208,8 +208,8 @@ export const MedicationList = () => {
                   <p className="text-sm">Patient: {medication.patientName}</p>
                   <span
                     className={`inline-block px-2 py-1 text-xs rounded-full ${medication.isActive
-                        ? "bg-green-100 text-green-800"
-                        : "bg-gray-100 text-gray-800"
+                      ? "bg-green-100 text-green-800"
+                      : "bg-gray-100 text-gray-800"
                       }`}
                   >
                     {medication.isActive ? "Active" : "Inactive"}

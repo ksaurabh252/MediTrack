@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 
 const AIInteractionPopup = () => {
@@ -74,7 +74,7 @@ const AIInteractionPopup = () => {
           zIndex: 1000,
         }}
       >
-       <img src="https://i.ibb.co/JpG6JDx/icons8-ai-chatting-50.png" alt="" />
+        <img src="https://i.ibb.co/JpG6JDx/icons8-ai-chatting-50.png" alt="" />
       </div>
 
       {/* Chat Popup */}
@@ -95,7 +95,7 @@ const AIInteractionPopup = () => {
             flexDirection: 'column',
           }}
         >
-          <h3 style={{color:'white', margin: 0, fontSize: '18px', fontWeight: 'bold', marginBottom: '8px' }}>AI Assistant</h3>
+          <h3 style={{ color: 'white', margin: 0, fontSize: '18px', fontWeight: 'bold', marginBottom: '8px' }}>AI Assistant</h3>
           {response && (
             <div
               style={{
@@ -140,7 +140,7 @@ const AIInteractionPopup = () => {
               border: 'none',
               borderRadius: '4px',
               cursor: 'pointer',
-            } } className="hover:bg-gray-700" 
+            }} className="hover:bg-gray-700"
           >
             {loading ? 'Sending...' : 'Send'}
           </button>

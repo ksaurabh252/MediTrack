@@ -3,7 +3,7 @@ import Button from "../../components/ui/Button/Button";
 import Modal from "../../components/ui/Modal/Modal";
 import { format } from "date-fns";
 const MedicationDetails = ({ medication, onClose }) => {
-  //  format dates consistently
+
   const formatDate = (dateString) => {
     try {
       return dateString
@@ -70,8 +70,8 @@ const MedicationDetails = ({ medication, onClose }) => {
                       <span
                         key={day}
                         className={`w-7 h-7 rounded-full flex items-center justify-center text-sm ${medication.schedule.customDays.includes(day)
-                            ? "bg-blue-500 text-white"
-                            : "text-gray-400"
+                          ? "bg-blue-500 text-white"
+                          : "text-gray-400"
                           }`}
                       >
                         {["S", "M", "T", "W", "T", "F", "S"][day]}
