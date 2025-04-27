@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import {
   fetchMedications,
   addMedication,
@@ -11,11 +12,18 @@ import { Modal } from "../../components/ui/Modal/Modal";
 import { Card } from "../../components/ui/Card/Card";
 import { Button } from "../../components/ui/Button/Button";
 import { Toast } from "../../components/ui/Toast/Toast";
+import DoseReminder from "../../components/medications/DoseReminder";
+import { useReminders } from "../../hooks/useReminders";
 
 export const MedicationList = () => {
+  // Redux state
+  const { medications: reduxMeds, pendingReminders } = useSelector(
+    (state) => state.medications
+  );
+  const dispatch = useDispatch();
+
   const [medications, setMedications] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [currentMedication, setCurrentMedication] = useState(null);
@@ -23,41 +31,54 @@ export const MedicationList = () => {
   const [activeFilter, setActiveFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
-
-  useEffect(() => {
-    const loadMedications = async () => {
-      try {
-        const data = await fetchMedications();
-        setMedications(data);
-        setLoading(false);
-      } catch (err) {
-        showToast(`Failed to load medications: ${err.message}`, "error");
-        setLoading(false);
-      }
-    };
-
-    loadMedications();
-  }, []);
-
   const [toast, setToast] = useState({
     show: false,
     message: "",
     type: "info",
   });
 
+  // Initialize reminder system
+  useReminders(reduxMeds, dispatch);
+
+  useEffect(() => {
+    const loadMedications = async () => {
+      try {
+        // const data = await fetchMedications();
+        const action = await dispatch(fetchMedications());
+        if (fetchMedications.fulfilled.match(action)) {
+          setMedications(action.payload || []);
+        }
+        setLoading(false);
+      } catch (err) {
+        showToast(`Failed to load medications: ${err.message}`, "error");
+        setLoading(false);
+      }
+    };
+    loadMedications();
+  }, []);
+
   const showToast = (message, type = "info") => {
     setToast({ show: true, message, type });
     setTimeout(() => setToast((prev) => ({ ...prev, show: false })), 3000);
   };
 
+  const handleReminderAction = (medId, action, snoozeMinutes = 0) => {
+    dispatch({
+      type: "medications/handleReminderAction",
+      payload: { medId, action, snoozeMinutes },
+    });
+  };
+
   const handleAddMedication = async (medicationData) => {
     try {
-      console.log("Adding medication:", medicationData);
-      const newMedication = await addMedication(medicationData);
-      console.log("Added successfully:", newMedication);
-      setMedications((prev) => [...prev, newMedication]);
-      setIsModalOpen(false);
-      showToast("Medication added successfully!", "success");
+      const action = await dispatch(addMedication(medicationData));
+      setMedications((prev) => [...prev, action.payload]);
+
+      if (addMedication.fulfilled.match(action)) {
+        setMedications((prev) => [...prev, action.payload]);
+        setIsModalOpen(false);
+        showToast("Medication added successfully!", "success");
+      }
     } catch (err) {
       showToast(`Failed to add medication: ${err.message}`, "error");
       console.error("Failed to add medication:", err);
@@ -126,26 +147,25 @@ export const MedicationList = () => {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
-
   const totalPages = Math.ceil(filteredMedications.length / itemsPerPage);
 
-  // if (loading) return <div>Loading medications...</div>;
-  if (loading)
+  if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-
       </div>
     );
+  }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative">
+      {/* Header and controls */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Medication Management</h1>
         <Button onClick={() => openEditModal(null)}>Add New Medication</Button>
       </div>
 
+      {/* Search and filter */}
       <div className="flex flex-col md:flex-row gap-4">
         <input
           type="text"
@@ -154,7 +174,6 @@ export const MedicationList = () => {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-
         <select
           className="p-2 border rounded"
           value={activeFilter}
@@ -166,6 +185,7 @@ export const MedicationList = () => {
         </select>
       </div>
 
+      {/* Medication list */}
       {paginatedMedications.length === 0 ? (
         <Card>
           <p>No medications found matching your criteria.</p>
@@ -182,14 +202,14 @@ export const MedicationList = () => {
                 <div>
                   <h2 className="text-lg font-semibold">{medication.name}</h2>
                   <p className="text-sm text-gray-600">
-                    {medication.dosage} {medication.dosageUnit} •{" "}
-                    {medication.frequency}
+                    {medication.dosage}
+                    {medication.dosageUnit} • {medication.frequency}
                   </p>
                   <p className="text-sm">Patient: {medication.patientName}</p>
                   <span
                     className={`inline-block px-2 py-1 text-xs rounded-full ${medication.isActive
-                      ? "bg-green-100 text-green-800"
-                      : "bg-gray-100 text-gray-800"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-gray-100 text-gray-800"
                       }`}
                   >
                     {medication.isActive ? "Active" : "Inactive"}
@@ -223,6 +243,7 @@ export const MedicationList = () => {
         </div>
       )}
 
+      {/* Pagination */}
       {filteredMedications.length > itemsPerPage && (
         <div className="flex justify-center space-x-2">
           <Button
@@ -247,7 +268,7 @@ export const MedicationList = () => {
         </div>
       )}
 
-      {/* Edit/Add Medication Modal */}
+      {/* Modals */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -264,7 +285,6 @@ export const MedicationList = () => {
         )}
       </Modal>
 
-      {/* Medication Details Modal */}
       <Modal
         isOpen={isDetailsModalOpen}
         onClose={closeModals}
@@ -284,6 +304,22 @@ export const MedicationList = () => {
           <div>No medication data available</div>
         )}
       </Modal>
+
+      {/* Reminder popups */}
+      {pendingReminders.map((medId) => {
+        const medication = reduxMeds.find((m) => m.id === medId);
+        return medication ? (
+          <DoseReminder
+            key={medId}
+            medication={medication}
+            onMarkTaken={() => handleReminderAction(medId, "taken")}
+            onSnooze={(mins) => handleReminderAction(medId, "snooze", mins)}
+            onMarkMissed={() => handleReminderAction(medId, "missed")}
+          />
+        ) : null;
+      })}
+
+      {/* Toast notifications */}
       <Toast
         message={toast.message}
         type={toast.type}
