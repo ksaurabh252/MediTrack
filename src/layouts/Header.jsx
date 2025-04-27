@@ -1,21 +1,21 @@
 
 import PropTypes from 'prop-types';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Header = ({ darkMode, setDarkMode }) => {
   const navigate = useNavigate();
 
   return (
     <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
-      <div
+      <Link
         className="flex items-center space-x-2 cursor-pointer"
-        onClick={() => navigate('/')}
+        to={"/"}
       >
         <svg className="w-8 h-8 text-indigo-600" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
           <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
         </svg>
         <span className="text-xl font-bold">MediTrack</span>
-      </div>
+      </Link>
       <div className="flex items-center space-x-6">
         <button
           onClick={() => setDarkMode(!darkMode)}

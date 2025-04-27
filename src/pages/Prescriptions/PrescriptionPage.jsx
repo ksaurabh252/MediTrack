@@ -1,166 +1,107 @@
-import { useState } from "react";
-import { Button } from "../../components/ui/Button/Button";
-import { Card } from "../../components/ui/Card/Card";
-import { Modal } from "../../components/ui/Modal/Modal";
-import { useToast } from "../../hooks/useToast";
+import { useEffect, useState } from 'react';
+import { Button } from '../../components/ui/Button/Button';
+import { Card } from '../../components/ui/Card/Card';
+import { Modal } from '../../components/ui/Modal/Modal';
+import { useToast } from '../../hooks/useToast';
+import Header from '../../layouts/Header';
+import Footer from '../../layouts/Footer';
 
 export default function PrescriptionPage() {
-  const [prescriptions, setPrescriptions] = useState([]);
+  const [prescriptions, setPrescriptions] = useState(
+    JSON.parse(localStorage.getItem('meditrack_prescriptions')) || []
+  );
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [viewingFile, setViewingFile] = useState(null);
   const { showToast } = useToast();
-  const [previewUrl, setPreviewUrl] = useState(null);
+
+  // Save to localStorage when prescriptions change
+  useEffect(() => {
+    localStorage.setItem('meditrack_prescriptions', JSON.stringify(prescriptions));
+  }, [prescriptions]);
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        showToast("File size too large (max 5MB)", "error");
+        showToast('File size too large (max 5MB)', 'error');
         return;
       }
-      if (!["image/jpeg", "image/png", "application/pdf"].includes(file.type)) {
-        showToast("Invalid file type (JPEG, PNG, PDF only)", "error");
+      if (!['image/jpeg', 'image/png', 'application/pdf'].includes(file.type)) {
+        showToast('Invalid file type (JPEG, PNG, PDF only)', 'error');
         return;
       }
-
       setSelectedFile(file);
-
-      if (file.type.includes("image")) {
-        setPreviewUrl(URL.createObjectURL(file));
-      } else if (file.type === "application/pdf") {
-        setPreviewUrl("/pdf-icon-thumbnail.png");
-      }
     }
   };
 
   const handleUpload = () => {
     if (selectedFile) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const newPrescription = {
-          id: Date.now(),
-          name: selectedFile.name,
-          type: selectedFile.type,
-          date: new Date().toISOString(),
-          status: "Pending Review",
-          data: e.target.result,
-        };
-        setPrescriptions((prev) => [...prev, newPrescription]);
-        setSelectedFile(null);
-        setPreviewUrl(null);
-        setIsUploadModalOpen(false);
-        showToast("Prescription uploaded successfully", "success");
+      const newPrescription = {
+        id: Date.now(),
+        name: selectedFile.name,
+        type: selectedFile.type,
+        date: new Date().toISOString(),
+        status: 'Pending Review'
       };
-      reader.readAsDataURL(selectedFile);
+      setPrescriptions([...prescriptions, newPrescription]);
+      setSelectedFile(null);
+      setIsUploadModalOpen(false);
+      showToast('Prescription uploaded successfully', 'success');
     }
   };
 
   const handleRenewal = (id) => {
-    setPrescriptions((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, status: "Renewal Requested" } : p))
-    );
-    showToast("Renewal requested", "success");
-  };
-
-  const handleView = (prescription) => {
-    setViewingFile(prescription);
-    setPreviewUrl(prescription.data);
-    setIsUploadModalOpen(true);
+    setPrescriptions(prescriptions.map(p =>
+      p.id === id ? { ...p, status: 'Renewal Requested' } : p
+    ));
+    showToast('Renewal requested', 'success');
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Prescription Management</h1>
-        <Button onClick={() => setIsUploadModalOpen(true)}>
-          Upload Prescription
-        </Button>
-      </div>
+    <div className="min-h-screen flex flex-col">
+      <Header darkMode={darkMode} setDarkMode={setDarkMode} />
+      <div className="flex-grow container mx-auto px-4 py-8">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold">Prescription Management</h1>
+          <Button onClick={() => setIsUploadModalOpen(true)}>Upload Prescription</Button>
+        </div>
 
-      <Card className="p-6">
-        {prescriptions.length === 0 ? (
-          <p className="text-gray-600">
-            No prescriptions found. Upload your first prescription.
-          </p>
-        ) : (
-          <div className="space-y-4">
-            {prescriptions.map((prescription) => (
-              <Card
-                key={prescription.id}
-                className="p-4 flex justify-between items-center"
-              >
-                <div>
-                  <h3 className="font-semibold">{prescription.name}</h3>
-                  <p className="text-sm text-gray-600">
-                    {new Date(prescription.date).toLocaleDateString()} •{" "}
-                    {prescription.status}
-                  </p>
-                </div>
-                <div className="flex space-x-2">
-                  <Button
-                    variant="secondary"
-                    onClick={() => handleRenewal(prescription.id)}
-                    disabled={prescription.status === "Renewal Requested"}
-                  >
-                    {prescription.status === "Renewal Requested"
-                      ? "Requested"
-                      : "Request Renewal"}
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    onClick={() => handleView(prescription)}
-                  >
-                    View
-                  </Button>
-                </div>
-              </Card>
-            ))}
-          </div>
-        )}
-      </Card>
-
-      <Modal
-        isOpen={isUploadModalOpen}
-        onClose={() => {
-          setIsUploadModalOpen(false);
-          setPreviewUrl(null);
-          setViewingFile(null);
-        }}
-        title={
-          viewingFile
-            ? `View Prescription: ${viewingFile.name}`
-            : "Upload Prescription"
-        }
-      >
-        <div className="space-y-4">
-          {viewingFile ? (
-            <div className="mt-4 border rounded-lg p-2 max-h-[500px] overflow-auto">
-              {viewingFile.type.includes("image") ? (
-                <img
-                  src={previewUrl}
-                  alt="Prescription Preview"
-                  className="max-h-96 mx-auto"
-                />
-              ) : viewingFile.type === "application/pdf" ? (
-                <iframe
-                  src={previewUrl}
-                  title="PDF Preview"
-                  className="w-full h-96 rounded"
-                  frameBorder="0"
-                ></iframe>
-              ) : (
-                <div className="flex flex-col items-center">
-                  <img
-                    src="/pdf-icon-thumbnail.png"
-                    alt="PDF Icon"
-                    className="h-12 w-12 mb-2"
-                  />
-                  <p className="text-sm">{viewingFile.name}</p>
-                </div>
-              )}
-            </div>
+        <Card className="p-6">
+          {prescriptions.length === 0 ? (
+            <p className="text-gray-600">No prescriptions found. Upload your first prescription.</p>
           ) : (
+            <div className="space-y-4">
+              {prescriptions.map((prescription) => (
+                <Card key={prescription.id} className="p-4 flex justify-between items-center">
+                  <div>
+                    <h3 className="font-semibold">{prescription.name}</h3>
+                    <p className="text-sm text-gray-600">
+                      {new Date(prescription.date).toLocaleDateString()} • {prescription.status}
+                    </p>
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button
+                      variant="secondary"
+                      onClick={() => handleRenewal(prescription.id)}
+                      disabled={prescription.status === 'Renewal Requested'}
+                    >
+                      {prescription.status === 'Renewal Requested' ? 'Requested' : 'Request Renewal'}
+                    </Button>
+                    <Button variant="secondary">View</Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
+        </Card>
+
+        <Modal
+          isOpen={isUploadModalOpen}
+          onClose={() => setIsUploadModalOpen(false)}
+          title="Upload Prescription"
+        >
+          <div className="space-y-4">
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
               <input
                 type="file"
@@ -177,8 +118,7 @@ export default function PrescriptionPage() {
                   <div>
                     <p>{selectedFile.name}</p>
                     <p className="text-sm text-gray-500">
-                      {selectedFile.type} •{" "}
-                      {(selectedFile.size / 1024 / 1024).toFixed(2)}MB
+                      {selectedFile.type} • {(selectedFile.size / 1024 / 1024).toFixed(2)}MB
                     </p>
                   </div>
                 ) : (
@@ -191,15 +131,15 @@ export default function PrescriptionPage() {
                 )}
               </label>
             </div>
-          )}
-
-          {selectedFile && !viewingFile && (
-            <div className="flex justify-end">
-              <Button onClick={handleUpload}>Upload</Button>
-            </div>
-          )}
-        </div>
-      </Modal>
+            {selectedFile && (
+              <div className="flex justify-end">
+                <Button onClick={handleUpload}>Upload</Button>
+              </div>
+            )}
+          </div>
+        </Modal>
+      </div>
+      <Footer darkMode={darkMode} />
     </div>
   );
 }
