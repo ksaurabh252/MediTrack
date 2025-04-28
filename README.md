@@ -104,6 +104,25 @@ MediTrack is a modern, responsive web application designed to help users effortl
    cd meditrack
    ```
 
+# Project Contributions
+
+This project was built collaboratively by a team of developers. Each member contributed to specific parts of the application as outlined below:
+
+- **Divyansh Chandel**  
+  Vinayak was responsible for the complete integration of AI features within the application. He handled the setup, API integration, and the interaction between the AI model and the user interface.
+
+- **Saurabh Kumar**  
+  Saurabh Kumar contributed to the development of all other remaining features of the application, ensuring the core functionalities, UI/UX enhancements, and backend connectivity were properly implemented.
+
+- **Swagata Dhara**  
+  Swagta developed the authentication system, including both the login and registration functionalities. He worked on designing secure user authentication flows and managing user sessions.
+
+---
+
+## Acknowledgment
+
+We acknowledge the efforts of every team member who contributed significantly to completing this project within the timeline.
+
 Meditrack/
 ├── api/
 │ ├── auth.js
