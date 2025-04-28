@@ -6,12 +6,27 @@ MediTrack is a modern, responsive web application designed to help users effortl
 
 ### ✅ Implemented Features
 
+- **Authentication System**
+
+  - Secure login/register flows with form validation
+  - Session persistence with Firebase Auth
+  - Protected routes for authenticated users
+  - Toast notifications for auth actions
+
+- **Dark Mode**
+
+  - System preference detection
+  - Manual toggle with state persistence
+  - Full UI theming support (all components)
+  - Smooth transition animations
+
 - **Medication Management**
 
   - Complete CRUD operations for medications
   - Dosage calculation tools (weight-based)
   - Custom scheduling (daily, weekly, custom days)
   - One-time dose exceptions
+  - Dosage history tracking
 
 - **Reminder System**
 
@@ -25,14 +40,21 @@ MediTrack is a modern, responsive web application designed to help users effortl
   - Document upload (PDF/Images)
   - File validation (type, size)
   - Renewal status tracking
-  - Basic preview functionality
+  - Document preview functionality
+
+- **AI Assistant**
+
+  - Context-aware medication queries
+  - Gemini API integration
+  - Persistent chat history
+  - Dark mode compatible
 
 - **Core Infrastructure**
   - React 18 + Vite
   - Redux Toolkit state management
-  - Tailwind CSS styling
+  - React Router 6
+  - Tailwind CSS with dark mode
   - Responsive layout
-  - Dark mode support
 
 ### 🚧 Upcoming Features
 
@@ -40,6 +62,8 @@ MediTrack is a modern, responsive web application designed to help users effortl
 - Doctor communication interface
 - Medication adherence reports
 - Mobile app integration
+- Social login options (Google, etc.)
+- Password reset functionality
 
 ## Technical Stack
 
@@ -50,11 +74,18 @@ MediTrack is a modern, responsive web application designed to help users effortl
 - React Router 6
 - Tailwind CSS + HeadlessUI
 - Date-fns for date handling
+- React Toastify for notifications
 
 **Backend**
 
-- Firebase Realtime Database (current)
+- Firebase Realtime Database
+- Firebase Authentication
 - REST API ready architecture
+
+**AI Integration**
+
+- Google Gemini API
+- Context-aware chat interface
 
 ## Getting Started
 
@@ -62,114 +93,114 @@ MediTrack is a modern, responsive web application designed to help users effortl
 
 - Node.js v16+
 - npm/yarn
+- Firebase project (for auth and database)
+- Google API key (for AI features)
 
 ### Installation
 
-```bash
-git clone https://github.com/ksaurabh252/MediTrack
-cd meditrack
-npm install
-
-npm run build
-
-## Project Structure
+1. Clone the repository:
+   ```bash
+   git clone [https://github.com/ksaurabh252/MediTrack](https://github.com/ksaurabh252/MediTrack)
+   cd meditrack
+   ```
 
 Meditrack/
 ├── api/
-│   ├── auth.js
-│   ├── medications.js
-│   └── prescriptions.js
+│ ├── auth.js
+│ ├── medications.js
+│ └── prescriptions.js
 ├── assets/
-│   ├── fonts/
-│   ├── styles/
-│   │   ├── base/
-│   │   │   └── base.css
-│   │   ├── components/
-│   │   │   └── button.module.css
-│   │   └── themes/
-│   │       └── default.css
-│   └── react.svg
+│ ├── fonts/
+│ └── styles/
+│ ├── base/
+│ │ └── base.css
+│ ├── components/
+│ │ └── button.module.css
+│ └── themes/
+│ └── default.css
 ├── components/
-│   ├── dashboard/
-│   │   ├── MedicationCard.jsx
-│   │   └── StatsWidget.jsx
-│   ├── medications/
-│   │   ├── DosageCalculator.jsx
-│   │   ├── DoseReminder.jsx
-│   │   ├── MedicationDetails.jsx
-│   │   ├── MedicationForm.jsx
-│   │   └── SchedulePicker.jsx
-│   ├── notifications/
-│   │   ├── AlertBanner.jsx
-│   │   ├── FileUpload.jsx
-│   │   └── Toast.jsx
-│   └── ui/
-│       ├── Button/
-│       │   └── Button.jsx
-│       ├── Card/
-│       │   └── Card.jsx
-│       ├── Modal/
-│       │   └── Modal.jsx
-│       └── Toast/
-│           └── Toast.jsx
+│ ├── dashboard/
+│ │ ├── MedicationCard.jsx
+│ │ └── StatsWidget.jsx
+│ ├── medications/
+│ │ ├── DosageCalculator.jsx
+│ │ ├── DoseReminder.jsx
+│ │ ├── MedicationDetails.jsx
+│ │ ├── MedicationForm.jsx
+│ │ └── SchedulePicker.jsx
+│ ├── notifications/
+│ │ ├── AlertBanner.jsx
+│ │ └── Toast.jsx
+│ ├── ui/
+│ │ ├── Button/
+│ │ │ └── Button.jsx
+│ │ ├── Card/
+│ │ │ └── Card.jsx
+│ │ ├── Modal/
+│ │ │ └── Modal.jsx
+│ │ └── Toast/
+│ │ └── Toast.jsx
+│ ├── Login.jsx
+│ ├── ProtectedRoute.jsx
+│ └── Register.jsx
 ├── config/
-│   ├── constants.js
-│   └── routes.js
+│ ├── constants.js
+│ ├── firebase.js
+│ └── routes.js
 ├── contexts/
-│   ├── AuthContext.jsx
-│   └── MedicationContext.jsx
+│ ├── AuthContext.jsx
+│ └── MedicationContext.jsx
 ├── hooks/
-│   ├── useMedications.js
-│   ├── useNotifications.js
-│   ├── usePersistProfile.js
-│   ├── useReminders.js
-│   └── useToast.js
+│ ├── useMedications.js
+│ ├── useNotifications.js
+│ ├── usePersistProfile.js
+│ ├── useReminders.js
+│ └── useToast.js
 ├── layouts/
-│   ├── AuthLayout.jsx
-│   ├── Footer.jsx
-│   ├── Header.jsx
-│   ├── MainLayout.jsx
-│   └── MedicationLayout.jsx
+│ ├── AuthLayout.jsx
+│ ├── Footer.jsx
+│ ├── Header.jsx
+│ ├── MainLayout.jsx
+│ └── MedicationLayout.jsx
 ├── pages/
-│   ├── Auth/
-│   │   ├── Login.jsx
-│   │   └── Register.jsx
-│   ├── Dashboard/
-│   │   └── Dashboard.jsx
-│   ├── homePage/
-│   │   ├── HomePage.jsx
-│   │   └── HomePage.module.css
-│   ├── Medications/
-│   │   ├── AddMedicationPage.jsx
-│   │   ├── DosageInput.jsx
-│   │   ├── MedicationDetails.jsx
-│   │   └── MedicationList.jsx
-│   ├── Prescriptions/
-│   │   ├── PrescriptionPage.jsx
-│   │   └── Prescriptions.jsx
-│   ├── Profile/
-│   │   ├── DoctorForm.jsx
-│   │   ├── DoctorsList.jsx
-│   │   ├── HealthDetailsForm.jsx
-│   │   ├── PersonalInfoForm.jsx
-│   │   └── ProfilePage.jsx
-│   └── NotFoundPage.jsx
+│ ├── Auth/
+│ │ ├── Login.jsx
+│ │ └── Register.jsx
+│ ├── Dashboard/
+│ │ └── Dashboard.jsx
+│ ├── homePage/
+│ │ ├── HomePage.jsx
+│ │ └── HomePage.module.css
+│ ├── Medications/
+│ │ ├── AddMedicationPage.jsx
+│ │ ├── DosageInput.jsx
+│ │ ├── MedicationDetails.jsx
+│ │ └── MedicationList.jsx
+│ ├── Prescriptions/
+│ │ ├── PrescriptionPage.jsx
+│ │ └── Prescriptions.jsx
+│ ├── Profile/
+│ │ ├── DoctorForm.jsx
+│ │ ├── DoctorsList.jsx
+│ │ ├── HealthDetailsForm.jsx
+│ │ ├── PersonalInfoForm.jsx
+│ │ └── ProfilePage.jsx
+│ └── NotFoundPage.jsx
 ├── popup/
-│   └── popup.jsx
+│ └── popup.jsx
 ├── store/
-│   ├── slices/
-│   │   ├── authSlice.js
-│   │   ├── medsSlice.js
-│   │   └── profileSlice.js
-│   └── store.js
+│ ├── slices/
+│ │ ├── authSlice.js
+│ │ ├── medsSlice.js
+│ │ └── profileSlice.js
+│ └── store.js
 ├── utils/
-│   ├── dateUtils.js
-│   ├── notificationUtils.js
-│   └── validation.js
+│ ├── dateUtils.js
+│ ├── notificationUtils.js
+│ └── validation.js
 ├── App.css
 ├── App.jsx
 ├── index.css
 ├── index.jsx
 ├── main.jsx
 └── serviceWorker.js
-```

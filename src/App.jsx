@@ -11,7 +11,10 @@ import NotFoundPage from './pages/NotFoundPage';
 import './App.css';
 import { useEffect, useState } from 'react';
 import AIInteractionPopup from './popup/popup';
-
+import Login from './components/Login';
+import Register from './components/Register';
+import ProtectedRoute from './components/ProtectedRoute';
+import { AuthProvider } from './contexts/AuthContext';
 
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
@@ -26,36 +29,37 @@ function App() {
     } else {
       document.documentElement.classList.remove('dark');
     }
+    localStorage.setItem("darkMode", JSON.stringify(darkMode));
   }, [darkMode]);
 
   return (
     <Provider store={store}>
-      <BrowserRouter>
-        <AIInteractionPopup />
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<LandingPage darkMode={darkMode} setDarkMode={setDarkMode} />} />
+      <AuthProvider>
+        <BrowserRouter>
+          <AIInteractionPopup />
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<LandingPage darkMode={darkMode} setDarkMode={setDarkMode} />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
 
-          {/* Medication Routes with Reminder System */}
-          <Route path="/medications" element={<MedicationLayout darkMode={darkMode} setDarkMode={setDarkMode} />}>
+            {/* Protected Routes */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/medications" element={<MedicationLayout darkMode={darkMode} setDarkMode={setDarkMode} />}>
+                <Route index element={<MedicationList />} />
+                <Route path="add" element={<AddMedicationPage />} />
+                <Route path="edit/:id" element={<AddMedicationPage />} />
+              </Route>
 
-            <Route index element={<MedicationList />} />
+              <Route path="/prescriptions" element={<PrescriptionPage darkMode={darkMode} setDarkMode={setDarkMode} />} />
+              <Route path="/profile" element={<ProfilePage darkMode={darkMode} setDarkMode={setDarkMode} />} />
+            </Route>
 
-            <Route path="add" element={<AddMedicationPage />} />
-
-            <Route path="edit/:id" element={<AddMedicationPage />} />
-          </Route>
-
-          {/* Other Routes */}
-          <Route path="/prescriptions" element={<PrescriptionPage darkMode={darkMode} setDarkMode={setDarkMode} />} />
-
-
-          <Route path="/profile" element={<ProfilePage darkMode={darkMode} setDarkMode={setDarkMode} />} />
-
-          {/* 404 Handling */}
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </BrowserRouter>
+            {/* 404 Route */}
+            <Route path="*" element={<NotFoundPage darkMode={darkMode} setDarkMode={setDarkMode} />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </Provider>
   );
 }
