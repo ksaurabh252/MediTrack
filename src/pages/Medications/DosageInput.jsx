@@ -2,6 +2,18 @@ import PropTypes from "prop-types";
 import { useState, useEffect } from "react";
 import { DosageCalculator } from "../../components/medications/DosageCalculator";
 
+/**
+ * DosageInput component allows users to input and adjust medication dosage,
+ * select units, and optionally use a dosage calculator based on patient weight.
+ * Shows a warning when approaching the maximum allowed dosage.
+ *
+ * @param {object} props
+ * @param {number|string} props.value - Current dosage value
+ * @param {function} props.onChange - Callback when dosage changes
+ * @param {string} props.unit - Dosage unit (mg, ml, g, tsp)
+ * @param {function} props.onUnitChange - Callback when unit changes
+ * @param {number} props.maxDosage - Maximum allowed dosage
+ */
 export const DosageInput = ({
   value = 0,
   onChange,
@@ -13,21 +25,28 @@ export const DosageInput = ({
   const [showCalculator, setShowCalculator] = useState(false);
   const [patientWeight, setPatientWeight] = useState("");
 
+  // Parse patient weight as a number for calculator
   const numericWeight = patientWeight ? parseFloat(patientWeight) : 0;
 
+  /**
+   * Increment dosage by 1, not exceeding maxDosage.
+   */
   const handleIncrement = () => {
     const newValue = Math.min(Number(localDosage) + 1, maxDosage);
     setLocalDosage(newValue);
     onChange(newValue);
   };
 
+  /**
+   * Decrement dosage by 1, not going below 0.
+   */
   const handleDecrement = () => {
     const newValue = Math.max(Number(localDosage) - 1, 0);
     setLocalDosage(newValue);
     onChange(newValue);
   };
 
-  // Sync local state with prop changes
+  // Keep local state in sync with prop value
   useEffect(() => {
     setLocalDosage(value);
   }, [value]);
@@ -43,7 +62,6 @@ export const DosageInput = ({
         >
           -
         </button>
-
         <div className="flex-1 flex">
           <input
             type="number"
@@ -58,7 +76,6 @@ export const DosageInput = ({
             max={maxDosage}
             step="0.1"
           />
-
           <select
             value={unit}
             onChange={onUnitChange}
@@ -70,7 +87,6 @@ export const DosageInput = ({
             <option value="tsp">tsp</option>
           </select>
         </div>
-
         <button
           type="button"
           onClick={handleIncrement}
@@ -81,8 +97,12 @@ export const DosageInput = ({
         </button>
       </div>
 
+      {/* Show warning if dosage is approaching the maximum allowed */}
       {localDosage > maxDosage * 0.8 && (
         <div className="text-yellow-600 text-sm flex items-center">
+          {/* 
+            // Warning badge uses yellow color for visibility and accessibility
+          */}
           ⚠️ Approaching maximum dosage ({maxDosage} {unit})
         </div>
       )}
@@ -95,7 +115,6 @@ export const DosageInput = ({
         >
           {showCalculator ? "Hide Calculator" : "Dosage Calculator"}
         </button>
-
         <input
           type="number"
           placeholder="Weight (kg)"
@@ -109,6 +128,7 @@ export const DosageInput = ({
         />
       </div>
 
+      {/* Show DosageCalculator if toggled */}
       {showCalculator && (
         <DosageCalculator
           weight={numericWeight}

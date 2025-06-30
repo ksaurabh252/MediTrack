@@ -15,8 +15,11 @@ import { Toast } from "../../components/ui/Toast/Toast";
 import DoseReminder from "../../components/medications/DoseReminder";
 import { useReminders } from "../../hooks/useReminders";
 
+/**
+ * MedicationList component manages the display, search, filter, pagination,
+ * and CRUD operations for medications. It also handles reminders and toasts.
+ */
 export const MedicationList = () => {
-  // Redux state
   const { medications: reduxMeds, pendingReminders } = useSelector(
     (state) => state.medications
   );
@@ -37,13 +40,14 @@ export const MedicationList = () => {
     type: "info",
   });
 
-  // Initialize reminder system
   useReminders(reduxMeds, dispatch);
 
   useEffect(() => {
+    /**
+     * Loads medications from the API and updates local state.
+     */
     const loadMedications = async () => {
       try {
-        // const data = await fetchMedications();
         const action = await dispatch(fetchMedications());
         if (fetchMedications.fulfilled.match(action)) {
           setMedications(action.payload || []);
@@ -57,11 +61,19 @@ export const MedicationList = () => {
     loadMedications();
   }, [dispatch]);
 
+  /**
+   * Displays a toast notification with a message and type.
+   * @param {string} message
+   * @param {string} type
+   */
   const showToast = (message, type = "info") => {
     setToast({ show: true, message, type });
     setTimeout(() => setToast((prev) => ({ ...prev, show: false })), 3000);
   };
 
+  /**
+   * Handles reminder actions (taken, snooze, missed) for a medication.
+   */
   const handleReminderAction = (medId, action, snoozeMinutes = 0) => {
     dispatch({
       type: "medications/handleReminderAction",
@@ -69,11 +81,13 @@ export const MedicationList = () => {
     });
   };
 
+  /**
+   * Handles adding a new medication.
+   */
   const handleAddMedication = async (medicationData) => {
     try {
       const action = await dispatch(addMedication(medicationData));
       setMedications((prev) => [...prev, action.payload]);
-
       if (addMedication.fulfilled.match(action)) {
         setMedications((prev) => [...prev, action.payload]);
         setIsModalOpen(false);
@@ -85,6 +99,9 @@ export const MedicationList = () => {
     }
   };
 
+  /**
+   * Handles updating an existing medication.
+   */
   const handleUpdateMedication = async (medicationData) => {
     try {
       const updatedMedication = await updateMedication(
@@ -104,6 +121,9 @@ export const MedicationList = () => {
     }
   };
 
+  /**
+   * Handles deleting a medication.
+   */
   const handleDeleteMedication = async (id) => {
     try {
       await deleteMedication(id);
@@ -116,22 +136,32 @@ export const MedicationList = () => {
     }
   };
 
+  /**
+   * Opens the edit modal for a medication.
+   */
   const openEditModal = (medication) => {
     setCurrentMedication(medication);
     setIsModalOpen(true);
   };
 
+  /**
+   * Opens the details modal for a medication.
+   */
   const openDetailsModal = (medication) => {
     setCurrentMedication(medication);
     setIsDetailsModalOpen(true);
   };
 
+  /**
+   * Closes all modals and resets current medication.
+   */
   const closeModals = () => {
     setIsModalOpen(false);
     setIsDetailsModalOpen(false);
     setCurrentMedication(null);
   };
 
+  // Filter medications by search term and active/inactive status
   const filteredMedications = medications.filter((med) => {
     const matchesSearch =
       med.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -143,6 +173,7 @@ export const MedicationList = () => {
     return matchesSearch && matchesFilter;
   });
 
+  // Paginate filtered medications
   const paginatedMedications = filteredMedications.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
@@ -159,13 +190,13 @@ export const MedicationList = () => {
 
   return (
     <div className="space-y-6 relative">
-      {/* Header and controls */}
+      {/* Header and Add Button */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Medication Management</h1>
         <Button onClick={() => openEditModal(null)}>Add New Medication</Button>
       </div>
 
-      {/* Search and filter */}
+      {/* Search and Filter Controls */}
       <div className="flex flex-col md:flex-row gap-4">
         <input
           type="text"
@@ -185,7 +216,7 @@ export const MedicationList = () => {
         </select>
       </div>
 
-      {/* Medication list */}
+      {/* Medication List or Empty State */}
       {paginatedMedications.length === 0 ? (
         <Card>
           <p>No medications found matching your criteria.</p>
@@ -202,14 +233,21 @@ export const MedicationList = () => {
                 <div>
                   <h2 className="text-lg font-semibold">{medication.name}</h2>
                   <p className="text-sm text-gray-600">
-                    {medication.dosage}
-                    {medication.dosageUnit} • {medication.frequency}
+                    {medication.dosage} {medication.dosageUnit} •{" "}
+                    {medication.frequency}
                   </p>
                   <p className="text-sm">Patient: {medication.patientName}</p>
+                  {/**
+                   * ReminderBadge component displays a status badge with optional count
+                   * for medication reminders with color-coded styling based on status
+                   *
+                   * // Define color schemes for different reminder statuses
+                   * // Each status has a light background with darker text for accessibility
+                   */}
                   <span
                     className={`inline-block px-2 py-1 text-xs rounded-full ${medication.isActive
-                      ? "bg-green-100 text-green-800"
-                      : "bg-gray-100 text-gray-800"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-gray-100 text-gray-800"
                       }`}
                   >
                     {medication.isActive ? "Active" : "Inactive"}
@@ -243,7 +281,7 @@ export const MedicationList = () => {
         </div>
       )}
 
-      {/* Pagination */}
+      {/* Pagination Controls */}
       {filteredMedications.length > itemsPerPage && (
         <div className="flex justify-center space-x-2">
           <Button
@@ -268,7 +306,7 @@ export const MedicationList = () => {
         </div>
       )}
 
-      {/* Modals */}
+      {/* Add/Edit Medication Modal */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -285,6 +323,7 @@ export const MedicationList = () => {
         )}
       </Modal>
 
+      {/* Medication Details Modal */}
       <Modal
         isOpen={isDetailsModalOpen}
         onClose={closeModals}
@@ -305,7 +344,7 @@ export const MedicationList = () => {
         )}
       </Modal>
 
-      {/* Reminder popups */}
+      {/* Dose Reminders */}
       {pendingReminders.map((medId) => {
         const medication = reduxMeds.find((m) => m.id === medId);
         return medication ? (
@@ -319,7 +358,7 @@ export const MedicationList = () => {
         ) : null;
       })}
 
-      {/* Toast notifications */}
+      {/* Toast Notification */}
       <Toast
         message={toast.message}
         type={toast.type}
