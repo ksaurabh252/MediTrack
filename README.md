@@ -121,7 +121,7 @@ This project was built collaboratively by a team of developers. Each member cont
 
 ## Acknowledgment
 
-We acknowledge the efforts of every team member who contributed significantly to completing this project within the timeline.
+I acknowledge the efforts of every team member who contributed significantly to completing this project within the timeline.
 
 Meditrack/
 ├── api/
