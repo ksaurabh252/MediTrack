@@ -1,3 +1,4 @@
+import ReminderTestPage from './pages/Medications/ReminderTestPage'
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from './store/store';
@@ -55,6 +56,7 @@ function App() {
               <Route path="/profile" element={<ProfilePage darkMode={darkMode} setDarkMode={setDarkMode} />} />
             </Route>
 
+            <Route path="/test-reminders" element={<ReminderTestPage />} />
             {/* 404 Route */}
             <Route path="*" element={<NotFoundPage darkMode={darkMode} setDarkMode={setDarkMode} />} />
           </Routes>
