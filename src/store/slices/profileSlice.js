@@ -3,32 +3,75 @@ import { createSlice } from "@reduxjs/toolkit";
 const loadProfile = () => {
   try {
     const saved = localStorage.getItem("meditrack_profile");
-    return saved
-      ? JSON.parse(saved)
-      : {
-          personalInfo: {
-            name: "",
-            email: "",
-            phone: "",
-            address: "",
-            dob: "",
-            gender: "",
-          },
-          healthDetails: {
-            bloodType: "",
-            allergies: [],
-            conditions: [],
-            height: "",
-            weight: "",
-          },
-          doctors: [],
-          status: "idle",
-        };
+    if (!saved) {
+      return {
+        personalInfo: {
+          name: "",
+          email: "",
+          phone: "",
+          address: "",
+          dob: "",
+          gender: "",
+        },
+        healthDetails: {
+          bloodType: "",
+          allergies: [],
+          conditions: [],
+          height: "",
+          weight: "",
+        },
+        doctors: [],
+        status: "idle",
+      };
+    }
+
+    const parsed = JSON.parse(saved);
+
+    // Validate structure
+    if (!parsed.personalInfo || !parsed.healthDetails) {
+      return {
+        personalInfo: {
+          name: "",
+          email: "",
+          phone: "",
+          address: "",
+          dob: "",
+          gender: "",
+        },
+        healthDetails: {
+          bloodType: "",
+          allergies: [],
+          conditions: [],
+          height: "",
+          weight: "",
+        },
+        doctors: [],
+        status: "idle",
+      };
+    }
+
+    return parsed;
   } catch (error) {
     console.error("Failed to load profile:", error);
+    // Clear corrupted data
+    localStorage.removeItem("meditrack_profile");
+
     return {
-      personalInfo: {},
-      healthDetails: {},
+      personalInfo: {
+        name: "",
+        email: "",
+        phone: "",
+        address: "",
+        dob: "",
+        gender: "",
+      },
+      healthDetails: {
+        bloodType: "",
+        allergies: [],
+        conditions: [],
+        height: "",
+        weight: "",
+      },
       doctors: [],
       status: "idle",
     };
@@ -42,11 +85,17 @@ const profileSlice = createSlice({
   initialState,
   reducers: {
     updatePersonalInfo(state, action) {
-      state.personalInfo = { ...state.personalInfo, ...action.payload };
+      state.personalInfo = {
+        ...state.personalInfo,
+        ...action.payload,
+      };
       localStorage.setItem("meditrack_profile", JSON.stringify(state));
     },
     updateHealthDetails(state, action) {
-      state.healthDetails = { ...state.healthDetails, ...action.payload };
+      state.healthDetails = {
+        ...state.healthDetails,
+        ...action.payload,
+      };
       localStorage.setItem("meditrack_profile", JSON.stringify(state));
     },
     addDoctor(state, action) {
@@ -57,9 +106,27 @@ const profileSlice = createSlice({
       state.doctors = state.doctors.filter((d) => d.id !== action.payload);
       localStorage.setItem("meditrack_profile", JSON.stringify(state));
     },
-
     resetProfile(state) {
-      state = initialState;
+      const defaultState = {
+        personalInfo: {
+          name: "",
+          email: "",
+          phone: "",
+          address: "",
+          dob: "",
+          gender: "",
+        },
+        healthDetails: {
+          bloodType: "",
+          allergies: [],
+          conditions: [],
+          height: "",
+          weight: "",
+        },
+        doctors: [],
+        status: "idle",
+      };
+      Object.assign(state, defaultState);
       localStorage.removeItem("meditrack_profile");
     },
   },
@@ -72,4 +139,5 @@ export const {
   removeDoctor,
   resetProfile,
 } = profileSlice.actions;
+
 export default profileSlice.reducer;
