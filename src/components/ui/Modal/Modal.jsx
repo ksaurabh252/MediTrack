@@ -14,13 +14,13 @@ export const Modal = ({ isOpen, onClose, children, title, size = "md" }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div
-        className={`w-full ${sizeClasses[size]} bg-white rounded-lg shadow-lg`}
+        className={`w-full ${sizeClasses[size]} bg-white dark:bg-gray-800 dark:text-white rounded-lg shadow-lg`}
       >
-        <div className="flex justify-between items-center border-b p-4">
+        <div className="flex justify-between items-center border-b dark:border-gray-700  p-4">
           <h3 className="text-lg font-semibold">{title}</h3>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
+            className="text-gray-500 hover:text-gray-700  dark:text-gray-400 dark:hover:text-gray-200"
             aria-label="Close modal"
 
           >
