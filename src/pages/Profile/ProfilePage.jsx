@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector, useDispatch } from
+  "react-redux";
+import { useTheme } from "../../contexts/ThemeContext";
+
+import { useCallback } from "react";
 import {
   updatePersonalInfo,
   updateHealthDetails,
@@ -7,7 +11,6 @@ import {
   removeDoctor,
 } from "../../store/slices/profileSlice";
 import { Card } from "../../components/ui/Card/Card";
-import { useToast } from "../../hooks/useToast";
 import PersonalInfoForm from "./PersonalInfoForm";
 import HealthDetailsForm from "./HealthDetailsForm";
 import DoctorsList from "./DoctorsList";
@@ -15,9 +18,9 @@ import DoctorForm from "./DoctorForm";
 import { Modal } from "../../components/ui/Modal/Modal";
 import Header from "../../layouts/Header";
 import Footer from "../../layouts/Footer";
-import PropTypes from "prop-types";
-
-export default function ProfilePage({ darkMode, setDarkMode }) {
+import { useToast } from "../../contexts/ToastContext";
+export default function ProfilePage() {
+  const { darkMode } = useTheme();
   const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState("personal");
   const [showDoctorModal, setShowDoctorModal] = useState(false);
@@ -25,17 +28,17 @@ export default function ProfilePage({ darkMode, setDarkMode }) {
   const profile = useSelector((state) => state.profile);
   const dispatch = useDispatch();
 
-  const handleSavePersonalInfo = (data) => {
+  const handleSavePersonalInfo = useCallback((data) => {
     dispatch(updatePersonalInfo(data));
     showToast("Personal information updated", "success");
-  };
+  }, [dispatch]);
 
-  const handleSaveHealthDetails = (data) => {
+  const handleSaveHealthDetails = useCallback((data) => {
     dispatch(updateHealthDetails(data));
     showToast("Health details updated", "success");
-  };
+  }, [dispatch]);
 
-  const handleAddDoctor = (doctor) => {
+  const handleAddDoctor = useCallback((doctor) => {
     dispatch(
       addDoctor({
         ...doctor,
@@ -44,16 +47,16 @@ export default function ProfilePage({ darkMode, setDarkMode }) {
     );
     setShowDoctorModal(false);
     showToast("Doctor added successfully", "success");
-  };
+  }, [dispatch]);
 
-  const handleRemoveDoctor = (id) => {
+  const handleRemoveDoctor = useCallback((id) => {
     dispatch(removeDoctor(id));
     showToast("Doctor removed", "success");
-  };
+  }, [dispatch]);
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header darkMode={darkMode} setDarkMode={setDarkMode} />
+      <Header />
 
       <div className="flex-grow container mx-auto px-4 py-8">
         <h1 className="text-2xl font-bold mb-6">User Profile</h1>
@@ -118,12 +121,8 @@ export default function ProfilePage({ darkMode, setDarkMode }) {
         </Modal>
       </div>
 
-      <Footer darkMode={darkMode} />
+      <Footer />
     </div>
   );
 }
 
-ProfilePage.propTypes = {
-  darkMode: PropTypes.bool.isRequired,
-  setDarkMode: PropTypes.func.isRequired,
-};
