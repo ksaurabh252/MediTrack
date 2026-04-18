@@ -1,30 +1,28 @@
-import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { addMedication } from "../../api/medications";
 import { MedicationForm } from "../../components/medications/MedicationForm";
 import { Card } from "../../components/ui/Card/Card";
 import { Button } from "../../components/ui/Button/Button";
-import { Toast } from "../../components/ui/Toast/Toast";
+import { useToast } from "../../contexts/ToastContext";
 
 const AddMedicationPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error } = useSelector((state) => state.medications);
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
+  const { loading } = useSelector((state) => state.medications);
+  const { showToast } = useToast();
 
   const handleSubmit = async (medicationData) => {
     try {
       await dispatch(addMedication(medicationData)).unwrap();
-      setToastMessage("Medication added successfully!");
-      setShowToast(true);
+
+      showToast("Medication added successfully!", "success");
+
       setTimeout(() => {
         navigate("/medications");
       }, 1500);
     } catch (err) {
-      setToastMessage(`Error: ${err.message}`);
-      setShowToast(true);
+      showToast(`Error: ${err.message}`, "error");
     }
   };
 
@@ -36,7 +34,7 @@ const AddMedicationPage = () => {
     <div className="container mx-auto px-4 py-8">
       <Card>
         <div className="flex justify-between items-center mb-6 bg-red-900">
-          <h1 className="text-2xl font-bold ">Add New Medication</h1>
+          <h1 className="text-2xl font-bold">Add New Medication</h1>
           <Button variant="secondary" onClick={handleCancel}>
             Back to Medications
           </Button>
@@ -49,14 +47,6 @@ const AddMedicationPage = () => {
           isLoading={loading}
         />
       </Card>
-
-      {showToast && (
-        <Toast
-          message={toastMessage}
-          type={error ? "error" : "success"}
-          onClose={() => setShowToast(false)}
-        />
-      )}
     </div>
   );
 };
