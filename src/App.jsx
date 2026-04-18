@@ -1,66 +1,74 @@
-import ReminderTestPage from './pages/Medications/ReminderTestPage'
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from './store/store';
-import LandingPage from './pages/homePage/HomePage';
-import MedicationLayout from './layouts/MedicationLayout';
-import AddMedicationPage from './pages/Medications/AddMedicationPage';
-import { MedicationList } from './pages/Medications/MedicationList';
-import PrescriptionPage from './pages/Prescriptions/PrescriptionPage';
-import ProfilePage from './pages/Profile/ProfilePage';
-import NotFoundPage from './pages/NotFoundPage';
-import './App.css';
-import { useEffect, useState } from 'react';
-import AIInteractionPopup from './popup/popup';
-import Login from './components/Login';
-import Register from './components/Register';
-import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './contexts/AuthContext';
+import { ToastProvider } from './contexts/ToastContext';
+import { ThemeProvider } from './contexts/ThemeContext';
+import AIInteractionPopup from './popup/popup';
+import ProtectedRoute from './components/ProtectedRoute';
+import { Suspense, lazy } from 'react';
+
+// ✅ Lazy Loaded Pages/Layouts
+const LandingPage = lazy(() => import("./pages/homePage/HomePage"));
+const MedicationLayout = lazy(() => import("./layouts/MedicationLayout"));
+const AddMedicationPage = lazy(() => import("./pages/Medications/AddMedicationPage"));
+const MedicationList = lazy(() => import("./pages/Medications/MedicationList"));
+const PrescriptionPage = lazy(() => import("./pages/Prescriptions/PrescriptionPage"));
+const ProfilePage = lazy(() => import("./pages/Profile/ProfilePage"));
+const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
+const Login = lazy(() => import("./pages/Auth/Login"));
+const Register = lazy(() => import("./pages/Auth/Register"));
+const ReminderTestPage = lazy(() => import("./pages/Medications/ReminderTestPage"));
+
+import './App.css';
 
 function App() {
-  const [darkMode, setDarkMode] = useState(() => {
-    // Check user's preferred color scheme
-    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  });
-
-  // Apply dark mode class to document
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    localStorage.setItem("darkMode", JSON.stringify(darkMode));
-  }, [darkMode]);
-
   return (
     <Provider store={store}>
       <AuthProvider>
-        <BrowserRouter>
-          <AIInteractionPopup />
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<LandingPage darkMode={darkMode} setDarkMode={setDarkMode} />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+        <ToastProvider>
+          <ThemeProvider>
+            <BrowserRouter>
+              <AIInteractionPopup />
+              <Suspense
+                fallback={
+                  <div className="flex items-center justify-center h-screen">
+                    <p>Loading...</p>
+                  </div>
+                }
+              >
+                <Routes>
+                  {/* Public Routes */}
+                  <Route path="/" element={<LandingPage />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
 
-            {/* Protected Routes */}
-            <Route element={<ProtectedRoute />}>
-              <Route path="/medications" element={<MedicationLayout darkMode={darkMode} setDarkMode={setDarkMode} />}>
-                <Route index element={<MedicationList />} />
-                <Route path="add" element={<AddMedicationPage />} />
-                <Route path="edit/:id" element={<AddMedicationPage />} />
-              </Route>
+                  {/* Protected Routes */}
+                  <Route element={<ProtectedRoute />}>
+                    <Route path="/medications" element={<MedicationLayout />}>
+                      <Route index element={<MedicationList />} />
+                      <Route path="add" element={<AddMedicationPage />} />
+                      <Route path="edit/:id" element={<AddMedicationPage />} />
+                    </Route>
 
-              <Route path="/prescriptions" element={<PrescriptionPage darkMode={darkMode} setDarkMode={setDarkMode} />} />
-              <Route path="/profile" element={<ProfilePage darkMode={darkMode} setDarkMode={setDarkMode} />} />
-            </Route>
+                    <Route
+                      path="/prescriptions"
+                      element={<PrescriptionPage />}
+                    />
+                    <Route path="/profile" element={<ProfilePage />} />
+                  </Route>
 
-            <Route path="/test-reminders" element={<ReminderTestPage />} />
-            {/* 404 Route */}
-            <Route path="*" element={<NotFoundPage darkMode={darkMode} setDarkMode={setDarkMode} />} />
-          </Routes>
-        </BrowserRouter>
+                  {/* Test + 404 */}
+                  <Route
+                    path="/test-reminders"
+                    element={<ReminderTestPage />}
+                  />
+                  <Route path="*" element={<NotFoundPage />} />
+                </Routes>
+              </Suspense>
+            </BrowserRouter>
+          </ThemeProvider>
+        </ToastProvider>
       </AuthProvider>
     </Provider>
   );
