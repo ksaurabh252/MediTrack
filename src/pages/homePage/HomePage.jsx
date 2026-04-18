@@ -1,30 +1,19 @@
 import styles from "../homePage/HomePage.module.css";
-import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { useTheme } from "../../contexts/ThemeContext";
+import { useAuth } from "../../contexts/AuthContext";
 import Footer from "../../layouts/Footer";
 import Header from "../../layouts/Header";
 
 const HomePage = () => {
-  const [darkMode, setDarkMode] = useState(false);
-  const navigate = useNavigate();
+  const { darkMode } = useTheme();
+  const { currentUser } = useAuth(); const navigate = useNavigate();
 
-  useEffect(() => {
-    if (
-      window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches
-    ) {
-      setDarkMode(true);
-    }
-  }, []);
 
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [darkMode]);
+  //Helper function for Navigation
+  const handleCTA = () => {
+    currentUser ? navigate("/medications") : navigate("/register");
+  };
 
   return (
     <div
@@ -33,7 +22,7 @@ const HomePage = () => {
     >
       {/* Navigation */}
 
-      <Header darkMode={darkMode} setDarkMode={setDarkMode} />
+      <Header />
 
       {/* Hero Section */}
       <section className="container mx-auto px-6 py-16 md:py-24 flex flex-col md:flex-row items-center">
@@ -42,21 +31,36 @@ const HomePage = () => {
             Take Control of Your{" "}
             <span className="text-indigo-600">Medication</span> Routine
           </h1>
-          <p className="text-lg md:text-xl mb-8 dark:text-gray-300">
+          <p className="text-lg md:text-xl mb-8 text-gray-600 dark:text-gray-300">
             Never miss a dose again with our intelligent medication management
             system. Get reminders, track adherence, and simplify prescription
             renewals - all in one place.
           </p>
           <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+            {/* Primary Action Button */}
             <button
-              onClick={() => navigate("/register")}
-              className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium cursor-pointer"
+              onClick={handleCTA}
+              className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 shadow-md hover:shadow-indigo-500/20 transition-all font-medium cursor-pointer"
             >
-              Get Started for Free
+              {currentUser ? "Go to Dashboard" : "Get Started for Free"}
             </button>
-            <button className="px-6 py-3 border border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-800 transition-colors font-medium hover:cursor-pointer">
-              Learn More
-            </button>
+
+            {/* Secondary Action Button - Only for guest users or for a different purpose */}
+            {!currentUser && (
+              <button className="px-6 py-3 border border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-800 transition-colors font-medium hover:cursor-pointer">
+                Learn More
+              </button>
+            )}
+
+
+            {currentUser && (
+              <button
+                onClick={() => navigate("/medications/add")}
+                className="px-6 py-3 border border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-800 transition-colors font-medium hover:cursor-pointer"
+              >
+                + Add New Med
+              </button>
+            )}
           </div>
         </div>
         <div className="md:w-1/2 flex justify-center">
@@ -302,27 +306,31 @@ const HomePage = () => {
       {/* CTA Section */}
       <section className={`py-16 ${darkMode ? "bg-gray-800" : "bg-indigo-50"}`}>
         <div className="container mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold mb-6">
-            Ready to Take Control of Your Health?
+          <h2 className={`text-3xl font-bold mb-6 ${darkMode ? "text-white" : "text-gray-900"}`}>
+            {currentUser
+              ? "Continue Your Health Journey"
+              : "Ready to Take Control of Your Health?"}
           </h2>
           <p
             className={`text-xl mb-8 max-w-2xl mx-auto ${darkMode ? "text-gray-300" : "text-gray-600"
               }`}
           >
-            Join thousands of users who are managing their medications
-            effortlessly with MediTrack.
+            {currentUser
+              ? "Welcome back! Check your upcoming doses and stay on track with your routine."
+              : "Join thousands of users who are managing their medications effortlessly with MediTrack."}
           </p>
           <button
-            onClick={() => navigate("/register")}
-            className="px-8 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium text-lg hover:cursor-pointer"
+            onClick={handleCTA}
+            className="px-8 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 shadow-lg hover:shadow-indigo-500/30 transition-all font-medium text-lg cursor-pointer"
           >
-            Get Started - Its Free
+
+            {currentUser ? "Go to Dashboard" : "Get Started - It's Free"}
           </button>
         </div>
       </section>
 
       {/* Footer */}
-      <Footer darkMode={darkMode} />
+      <Footer />
     </div>
   );
 };
