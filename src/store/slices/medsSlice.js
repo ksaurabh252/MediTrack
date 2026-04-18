@@ -1,10 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
+
 import {
   fetchMedications,
   addMedication,
   updateMedication,
   deleteMedication,
 } from "../../api/medications";
+
+import { calculateNextDoseTime } from "../../utils/dateUtils";
 
 const initialState = {
   medications: [],
@@ -164,39 +167,6 @@ const medsSlice = createSlice({
       });
   },
 });
-
-// Helper function to calculate next dose time
-function calculateNextDoseTime(medication) {
-  if (!medication.schedule) return null;
-
-  const now = new Date();
-  const { pattern, customDays } = medication.schedule;
-
-  switch (pattern) {
-    case "daily":
-      return new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString();
-
-    case "weekly": {
-      const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-      return nextWeek.toISOString();
-    }
-    case "custom":
-      if (customDays?.length) {
-        // Find next custom day
-        const today = now.getDay(); // 0-6 (Sun-Sat)
-        const nextDay = customDays.find((day) => day > today) || customDays[0];
-        const daysToAdd =
-          nextDay > today ? nextDay - today : 7 - today + nextDay;
-        return new Date(
-          now.getTime() + daysToAdd * 24 * 60 * 60 * 1000
-        ).toISOString();
-      }
-      return null;
-
-    default:
-      return null;
-  }
-}
 
 export const { handleReminderAction, showReminder, clearReminders } =
   medsSlice.actions;
