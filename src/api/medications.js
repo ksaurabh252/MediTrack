@@ -1,7 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-
-const BASE_URL = "https://unit-4-7dc0a-default-rtdb.firebaseio.com";
+import api from "./axiosInstance";
 
 // Utility functions
 const toISOString = () => new Date().toISOString();
@@ -11,7 +9,7 @@ export const fetchMedications = createAsyncThunk(
   "medications/fetchMedications",
   async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/medications.json`);
+      const response = await api.get("/medications.json");
       if (response.data) {
         return Object.entries(response.data).map(([id, medication]) => ({
           id,
@@ -56,10 +54,7 @@ export const addMedication = createAsyncThunk(
         updatedAt: toISOString(),
       };
 
-      const response = await axios.post(
-        `${BASE_URL}/medications.json`,
-        processedData
-      );
+      const response = await api.post("/medications.json", processedData);
 
       return {
         id: response.data.name,
@@ -80,10 +75,8 @@ export const updateMedication = createAsyncThunk(
         ...medicationData,
         updatedAt: toISOString(),
       };
-      await axios.patch(
-        `${BASE_URL}/medications/${id}.json`,
-        updatedMedication
-      );
+      await api.patch(`/medications/${id}.json`, updatedMedication);
+
       return { id, ...updatedMedication };
     } catch (error) {
       console.error("Updating medication error:", error);
@@ -96,7 +89,8 @@ export const deleteMedication = createAsyncThunk(
   "medications/deleteMedication",
   async (id) => {
     try {
-      await axios.delete(`${BASE_URL}/medications/${id}.json`);
+      await api.delete(`/medications/${id}.json`);
+
       return id;
     } catch (error) {
       console.error("Deleting medication error:", error);
