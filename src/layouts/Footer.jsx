@@ -1,11 +1,10 @@
-import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
-
-const Footer = ({ darkMode }) => {
+import { useTheme } from '../contexts/ThemeContext';
+const Footer = () => {
   const navigate = useNavigate();
-
+  const { darkMode } = useTheme();
   return (
-    <footer className={`py-8 ${darkMode ? 'bg-gray-900' : 'bg-gray-100'}`}>
+    <footer className="py-8 bg-gray-100 dark:bg-gray-900 transition-colors">
       <div className="container mx-auto px-6">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div
@@ -26,8 +25,6 @@ const Footer = ({ darkMode }) => {
   );
 };
 
-Footer.propTypes = {
-  darkMode: PropTypes.bool.isRequired
-};
+
 
 export default Footer;
