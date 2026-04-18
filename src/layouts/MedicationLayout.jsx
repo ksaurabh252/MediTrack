@@ -4,20 +4,12 @@ import DoseReminder from '../components/medications/DoseReminder';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Footer from './Footer';
-import { Toast } from '../components/ui/Toast/Toast';
 import Header from './Header';
-import { useState } from 'react';
 
 
 export default function MedicationLayout() {
   const { medications, pendingReminders } = useSelector(state => state.medications);
-  const [darkMode, setDarkMode] = useState(false);
   const dispatch = useDispatch();
-  const [toast, setToast] = useState({
-    show: false,
-    message: '',
-    type: 'info'
-  });
 
   // Initialize reminder system for all medication routes
   useReminders(medications, dispatch);
@@ -30,9 +22,9 @@ export default function MedicationLayout() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 transition-colors">
       {/* Header Component */}
-      <Header darkMode={darkMode} setDarkMode={setDarkMode} />
+      <Header />
 
       <main className="flex-grow p-4">
         {/* Main content and medication reminders */}
@@ -55,15 +47,7 @@ export default function MedicationLayout() {
       </main>
 
       {/* Footer Component */}
-      <Footer darkMode={darkMode} />
-
-      {/* Toast Notification */}
-      <Toast
-        message={toast.message}
-        type={toast.type}
-        show={toast.show}
-        onClose={() => setToast({ ...toast, show: false })}
-      />
+      <Footer />
     </div>
   );
 }
