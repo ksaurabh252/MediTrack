@@ -2,11 +2,14 @@ import { useState, useEffect } from 'react';
 import { Button } from '../../components/ui/Button/Button';
 import { Card } from '../../components/ui/Card/Card';
 import { Modal } from '../../components/ui/Modal/Modal';
-import { useToast } from '../../hooks/useToast';
+
 import Header from '../../layouts/Header';
 import Footer from '../../layouts/Footer';
+import { useToast } from '../../contexts/ToastContext';
+import { useTheme } from '../../contexts/ThemeContext';
 
-export default function PrescriptionPage({ darkMode, setDarkMode }) {
+export default function PrescriptionPage() {
+const {darkMode}=useTheme()
   const [prescriptions, setPrescriptions] = useState(
     JSON.parse(localStorage.getItem('meditrack_prescriptions')) || []
   );
@@ -15,6 +18,7 @@ export default function PrescriptionPage({ darkMode, setDarkMode }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [currentViewingFile, setCurrentViewingFile] = useState(null);
   const { showToast } = useToast();
+
 
   useEffect(() => {
     localStorage.setItem('meditrack_prescriptions', JSON.stringify(prescriptions));
@@ -68,7 +72,7 @@ export default function PrescriptionPage({ darkMode, setDarkMode }) {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header darkMode={darkMode} setDarkMode={setDarkMode} />
+      <Header />
 
       <div className="flex-grow container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
@@ -182,7 +186,7 @@ export default function PrescriptionPage({ darkMode, setDarkMode }) {
         </Modal>
       </div>
 
-      <Footer darkMode={darkMode} />
+      <Footer />
     </div>
   );
 }
