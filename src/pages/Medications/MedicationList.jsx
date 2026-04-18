@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+
+import { useToast } from "../../contexts/ToastContext";
 import {
   fetchMedications,
   addMedication,
@@ -11,20 +13,24 @@ import { MedicationDetails } from "../../components/medications/MedicationDetail
 import { Modal } from "../../components/ui/Modal/Modal";
 import { Card } from "../../components/ui/Card/Card";
 import { Button } from "../../components/ui/Button/Button";
-import { Toast } from "../../components/ui/Toast/Toast";
 import DoseReminder from "../../components/medications/DoseReminder";
 import { useReminders } from "../../hooks/useReminders";
+
+import { useCallback, useMemo } from "react";
+
+import { useDebounce } from "use-debounce";
 
 /**
  * MedicationList component manages the display, search, filter, pagination,
  * and CRUD operations for medications. It also handles reminders and toasts.
  */
-export const MedicationList = () => {
+const MedicationList = () => {
   const { medications: reduxMeds, pendingReminders } = useSelector(
     (state) => state.medications
   );
   const dispatch = useDispatch();
 
+  const { showToast } = useToast();
   const [medications, setMedications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -33,12 +39,9 @@ export const MedicationList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
+  const [debouncedSearch] = useDebounce(searchTerm, 300);
   const itemsPerPage = 5;
-  const [toast, setToast] = useState({
-    show: false,
-    message: "",
-    type: "info",
-  });
+
 
   useReminders(reduxMeds, dispatch);
 
@@ -62,18 +65,8 @@ export const MedicationList = () => {
   }, [dispatch]);
 
   /**
-   * Displays a toast notification with a message and type.
-   * @param {string} message
-   * @param {string} type
-   */
-  const showToast = (message, type = "info") => {
-    setToast({ show: true, message, type });
-    setTimeout(() => setToast((prev) => ({ ...prev, show: false })), 3000);
-  };
-
-  /**
-   * Handles reminder actions (taken, snooze, missed) for a medication.
-   */
+ * Handles reminder actions (taken, snooze, missed) for a medication.
+ */
   const handleReminderAction = (medId, action, snoozeMinutes = 0) => {
     dispatch({
       type: "medications/handleReminderAction",
@@ -84,57 +77,67 @@ export const MedicationList = () => {
   /**
    * Handles adding a new medication.
    */
-  const handleAddMedication = async (medicationData) => {
-    try {
-      const action = await dispatch(addMedication(medicationData));
-      setMedications((prev) => [...prev, action.payload]);
-      if (addMedication.fulfilled.match(action)) {
-        setMedications((prev) => [...prev, action.payload]);
-        setIsModalOpen(false);
-        showToast("Medication added successfully!", "success");
+  const handleAddMedication = useCallback(
+    async (medicationData) => {
+      try {
+        const action = await dispatch(addMedication(medicationData));
+
+        if (addMedication.fulfilled.match(action)) {
+          setMedications((prev) => [...prev, action.payload]);
+          setIsModalOpen(false);
+          showToast("Medication added successfully!", "success");
+        }
+      } catch (err) {
+        showToast(`Failed to add medication: ${err.message}`, "error");
+        console.error("Failed to add medication:", err);
       }
-    } catch (err) {
-      showToast(`Failed to add medication: ${err.message}`, "error");
-      console.error("Failed to add medication:", err);
-    }
-  };
+    },
+    [dispatch, showToast]
+  );
 
   /**
    * Handles updating an existing medication.
    */
-  const handleUpdateMedication = async (medicationData) => {
-    try {
-      const updatedMedication = await updateMedication(
-        currentMedication.id,
-        medicationData
-      );
-      setMedications((prev) =>
-        prev.map((med) =>
-          med.id === updatedMedication.id ? updatedMedication : med
-        )
-      );
-      closeModals();
-      showToast("Medication updated successfully!", "success");
-    } catch (err) {
-      showToast(`Failed to update medication: ${err.message}`, "error");
-      console.error("Failed to update medication:", err);
-    }
-  };
+  const handleUpdateMedication = useCallback(
+    async (medicationData) => {
+      try {
+        const updatedMedication = await (updateMedication(
+          currentMedication.id,
+          medicationData
+        )).unwrap();
+        setMedications((prev) =>
+          prev.map((med) =>
+            med.id === updatedMedication.id ? updatedMedication : med
+          )
+        );
+        closeModals();
+
+        showToast("Medication updated successfully!", "success");
+      } catch (err) {
+        showToast(`Failed to update medication: ${err.message}`, "error");
+        console.error("Failed to update medication:", err);
+      }
+    },
+    [dispatch, currentMedication, showToast]
+  );
 
   /**
    * Handles deleting a medication.
    */
-  const handleDeleteMedication = async (id) => {
-    try {
-      await deleteMedication(id);
-      setMedications((prev) => prev.filter((med) => med.id !== id));
-      closeModals();
-      showToast("Medication deleted successfully!", "success");
-    } catch (err) {
-      showToast(`Failed to delete medication: ${err.message}`, "error");
-      console.error("Failed to delete medication:", err);
-    }
-  };
+  const handleDeleteMedication = useCallback(
+    async (id) => {
+      try {
+        await deleteMedication(id);
+        setMedications((prev) => prev.filter((med) => med.id !== id));
+        closeModals();
+        showToast("Medication deleted successfully!", "success");
+      } catch (err) {
+        showToast(`Failed to delete medication: ${err.message}`, "error");
+        console.error("Failed to delete medication:", err);
+      }
+    },
+    [dispatch, showToast]
+  );
 
   /**
    * Opens the edit modal for a medication.
@@ -162,16 +165,18 @@ export const MedicationList = () => {
   };
 
   // Filter medications by search term and active/inactive status
-  const filteredMedications = medications.filter((med) => {
-    const matchesSearch =
-      med.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      med.patientName.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter =
-      activeFilter === "all" ||
-      (activeFilter === "active" && med.isActive) ||
-      (activeFilter === "inactive" && !med.isActive);
-    return matchesSearch && matchesFilter;
-  });
+  const filteredMedications = useMemo(() => {
+    return medications.filter((med) => {
+      const matchesSearch =
+        med.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+        med.patientName.toLowerCase().includes(debouncedSearch.toLowerCase());
+      const matchesFilter =
+        activeFilter === "all" ||
+        (activeFilter === "active" && med.isActive) ||
+        (activeFilter === "inactive" && !med.isActive);
+      return matchesSearch && matchesFilter;
+    });
+  }, [medications, debouncedSearch, activeFilter]);
 
   // Paginate filtered medications
   const paginatedMedications = filteredMedications.slice(
@@ -227,16 +232,16 @@ export const MedicationList = () => {
             <Card
               key={medication.id}
               onClick={() => openDetailsModal(medication)}
-              className="cursor-pointer hover:bg-gray-50 transition-colors"
+              className="cursor-pointer hover:bg-indigo-50 dark:hover:bg-gray-700 transition-colors"
             >
               <div className="flex justify-between items-start">
                 <div>
-                  <h2 className="text-lg font-semibold">{medication.name}</h2>
-                  <p className="text-sm text-gray-600">
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{medication.name}</h2>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
                     {medication.dosage} {medication.dosageUnit} •{" "}
                     {medication.frequency}
                   </p>
-                  <p className="text-sm">Patient: {medication.patientName}</p>
+                  <p className="text-sm text-gray-700 dark:text-gray-400">Patient: {medication.patientName}</p>
                   {/**
                    * ReminderBadge component displays a status badge with optional count
                    * for medication reminders with color-coded styling based on status
@@ -246,8 +251,8 @@ export const MedicationList = () => {
                    */}
                   <span
                     className={`inline-block px-2 py-1 text-xs rounded-full ${medication.isActive
-                        ? "bg-green-100 text-green-800"
-                        : "bg-gray-100 text-gray-800"
+                      ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                      : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
                       }`}
                   >
                     {medication.isActive ? "Active" : "Inactive"}
@@ -358,13 +363,8 @@ export const MedicationList = () => {
         ) : null;
       })}
 
-      {/* Toast Notification */}
-      <Toast
-        message={toast.message}
-        type={toast.type}
-        show={toast.show}
-        onClose={() => setToast((prev) => ({ ...prev, show: false }))}
-      />
     </div>
   );
 };
+
+export default MedicationList;
