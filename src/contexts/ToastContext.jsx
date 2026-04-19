@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, useCallback } from "react";
 import PropTypes from "prop-types";
-import { Toast } from "../components/ui/Toast/Toast";
-
+import { Toast } from "../components/ui/ui";
 const ToastContext = createContext();
 
 export function ToastProvider({ children }) {
