@@ -2,8 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { addMedication } from "../../api/medications";
 import { MedicationForm } from "../../components/medications/MedicationForm";
-import { Card } from "../../components/ui/Card/Card";
-import { Button } from "../../components/ui/Button/Button";
+import { Button, Card } from "../../components/ui/ui";
 import { useToast } from "../../contexts/ToastContext";
 
 const AddMedicationPage = () => {
