@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Button } from '../../components/ui/Button/Button';
-import { Card } from '../../components/ui/Card/Card';
-import { Modal } from '../../components/ui/Modal/Modal';
+import { Button, Card, Modal } from '../../components/ui/ui';
 
 import Header from '../../layouts/Header';
 import Footer from '../../layouts/Footer';
@@ -9,7 +7,7 @@ import { useToast } from '../../contexts/ToastContext';
 import { useTheme } from '../../contexts/ThemeContext';
 
 export default function PrescriptionPage() {
-const {darkMode}=useTheme()
+  const { darkMode } = useTheme()
   const [prescriptions, setPrescriptions] = useState(
     JSON.parse(localStorage.getItem('meditrack_prescriptions')) || []
   );

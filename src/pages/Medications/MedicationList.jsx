@@ -10,9 +10,7 @@ import {
 } from "../../api/medications";
 import { MedicationForm } from "../../components/medications/MedicationForm";
 import { MedicationDetails } from "../../components/medications/MedicationDetails";
-import { Modal } from "../../components/ui/Modal/Modal";
-import { Card } from "../../components/ui/Card/Card";
-import { Button } from "../../components/ui/Button/Button";
+import { Modal, Card, Button } from "../../components/ui/ui";
 import DoseReminder from "../../components/medications/DoseReminder";
 import { useReminders } from "../../hooks/useReminders";
 
