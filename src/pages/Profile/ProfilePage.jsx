@@ -10,12 +10,12 @@ import {
   addDoctor,
   removeDoctor,
 } from "../../store/slices/profileSlice";
-import { Card } from "../../components/ui/Card/Card";
+import { Modal, Card } from "../../components/ui/ui";
 import PersonalInfoForm from "./PersonalInfoForm";
 import HealthDetailsForm from "./HealthDetailsForm";
 import DoctorsList from "./DoctorsList";
 import DoctorForm from "./DoctorForm";
-import { Modal } from "../../components/ui/Modal/Modal";
+
 import Header from "../../layouts/Header";
 import Footer from "../../layouts/Footer";
 import { useToast } from "../../contexts/ToastContext";
