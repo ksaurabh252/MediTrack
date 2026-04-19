@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { SchedulePicker } from "./SchedulePicker";
 import { DosageInput } from "../../pages/Medications/DosageInput";
 import { validateMedication } from "../../utils/validation";
-import { Button } from "../ui/Button/Button";
+import { Button } from '../ui/ui';
 
 export const MedicationForm = ({
   initialData = {},

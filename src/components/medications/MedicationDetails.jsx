@@ -1,6 +1,6 @@
 
 import PropTypes from 'prop-types';
-import { Button } from '../ui/Button/Button';
+import { Button } from '../ui/ui';
 
 export const MedicationDetails = ({ medication, onEdit, onDelete }) => {
   return (

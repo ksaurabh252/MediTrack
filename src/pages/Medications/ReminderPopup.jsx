@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Button } from '../../components/ui/Button/Button';
+import { Button } from '../../components/ui/ui';
 
 // ReminderPopup component displays a modal popup for medication reminders
 const ReminderPopup = ({

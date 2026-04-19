@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { Button } from '../../components/ui/Button/Button';
+import { Button } from '../../components/ui/ui';
 
 /**
  * ReminderControls component provides action buttons for managing medication reminders

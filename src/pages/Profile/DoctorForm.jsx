@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Button } from '../../components/ui/Button/Button';
-
+import { Button } from '../../components/ui/ui';
 export default function DoctorForm({ onSubmit, onCancel }) {
   const [name, setName] = useState('');
   const [specialty, setSpecialty] = useState('');

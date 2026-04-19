@@ -1,4 +1,4 @@
-import { Button } from '../../components/ui/Button/Button';
+import { Button } from '../../components/ui/ui';
 import PropTypes from 'prop-types';
 export default function DoctorsList({ doctors, onAdd, onRemove }) {
   return (

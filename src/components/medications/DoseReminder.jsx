@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
-import { Button } from '../ui/Button/Button';
+import { Button } from '../ui/ui';
 
 const DoseReminder = ({
   medication,
