@@ -1,6 +1,5 @@
 import PropTypes from "prop-types";
-import { Button } from "../../components/ui/Button/Button";
-import { Modal } from "../../components/ui/Modal/Modal";
+import { Button, Modal } from "../../components/ui/ui";
 import { format } from "date-fns";
 const MedicationDetails = ({ medication, onClose }) => {
 
