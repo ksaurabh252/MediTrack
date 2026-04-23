@@ -195,7 +195,7 @@ const MedicationList = () => {
     <div className="space-y-6 relative">
       {/* Header and Add Button */}
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Medication Management</h1>
+        <h1 className="text-2xl font-bold ">Medication Management</h1>
         <Button onClick={() => openEditModal(null)}>Add New Medication</Button>
       </div>
 
