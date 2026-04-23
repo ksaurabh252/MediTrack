@@ -40,14 +40,14 @@ const HomePage = () => {
             {/* Primary Action Button */}
             <button
               onClick={handleCTA}
-              className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 shadow-md hover:shadow-indigo-500/20 transition-all font-medium cursor-pointer"
+              className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 shadow-md hover:shadow-indigo-500/20 transition-all font-medium "
             >
               {currentUser ? "Go to Dashboard" : "Get Started for Free"}
             </button>
 
             {/* Secondary Action Button - Only for guest users or for a different purpose */}
             {!currentUser && (
-              <button className="px-6 py-3 border border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-800 transition-colors font-medium hover:cursor-pointer">
+              <button className="px-6 py-3 border border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-800 transition-colors font-medium ">
                 Learn More
               </button>
             )}
@@ -56,7 +56,7 @@ const HomePage = () => {
             {currentUser && (
               <button
                 onClick={() => navigate("/medications/add")}
-                className="px-6 py-3 border border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-800 transition-colors font-medium hover:cursor-pointer"
+                className="px-6 py-3 border border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-800 transition-colors font-medium"
               >
                 + Add New Med
               </button>
@@ -321,7 +321,7 @@ const HomePage = () => {
           </p>
           <button
             onClick={handleCTA}
-            className="px-8 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 shadow-lg hover:shadow-indigo-500/30 transition-all font-medium text-lg cursor-pointer"
+            className="px-8 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 shadow-lg hover:shadow-indigo-500/30 transition-all font-medium text-lg "
           >
 
             {currentUser ? "Go to Dashboard" : "Get Started - It's Free"}

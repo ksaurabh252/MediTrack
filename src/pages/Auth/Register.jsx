@@ -97,7 +97,7 @@ export default function Register() {
                 />
                 <button
                   type="button"
-                  className="absolute right-3 top-3.5 cursor-pointer"
+                  className="absolute right-3 top-3.5"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   <svg className={styles.icon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
